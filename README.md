@@ -52,6 +52,10 @@ our [theme](https://github.com/CCBlueX/LiquidBounce/tree/nextgen/src-theme).
 4. Open the folder as a Gradle project in your preferred IDE.
 5. Run the client. (`./gradlew runClient`)
 
+## Fork theme customizations
+
+The Nextgen ClickGUI starts with aligned panels, keeps grid snapping enabled, and includes a `Reset Layout` control to clear saved panel positions and restore the initial arrangement. The HUD ArrayList exposes lowercase text, Rise-inspired color themes, custom gradients, backgrounds, glow, shadow, borders, and animation speed settings.
+
 ## Additional libraries
 
 ### Mixins
