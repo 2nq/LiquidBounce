@@ -19,14 +19,26 @@
 
 import type {NotificationSeverity} from "../../integration/events";
 
+declare global {
 interface HudToggleableConfigurable {
     enabled: boolean;
 }
 
 interface HudArrayListSettings {
     showTags: boolean;
+    lowercase: boolean;
     itemAlignment: "Left" | "Right";
     order: "Ascending" | "Descending";
+    theme: string;
+    customPrimary: number;
+    customSecondary: number;
+    background: "Off" | "Solid" | "Translucent";
+    backgroundAlpha: number;
+    glow: "Off" | "Soft" | "Strong";
+    shadow: boolean;
+    animation: "Slide";
+    animationSpeed: number;
+    border: "None" | "Accent" | "Item";
 }
 
 interface HudInventoryStatisticsSettings {
@@ -71,3 +83,7 @@ interface HudTextSettings {
         color: number;
     };
 }
+
+}
+
+export {};
