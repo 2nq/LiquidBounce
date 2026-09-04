@@ -103,6 +103,19 @@
     }
 
     $: animationDuration = boundedAnimationSpeed(cSettings.animationSpeed);
+    function colorFor(index: number): string {
+        return rgb(resolveArrayListColor(
+            cSettings.theme as ArrayListThemeName,
+            index,
+            enabledModules.length,
+            colorTime,
+            GLOBAL_PRIMARY,
+            GLOBAL_SECONDARY,
+            cSettings.customPrimary,
+            cSettings.customSecondary,
+        ));
+    }
+
     $: {
         const nextSignature = JSON.stringify(settings);
         if (nextSignature !== settingsSignature || settings !== previousSettings) {
@@ -129,16 +142,6 @@
 
 <div class="arraylist" class:align-left={cSettings.itemAlignment === "Left"} class:align-right={cSettings.itemAlignment === "Right"}>
     {#each enabledModules as module, index (module.name)}
-        {@const itemColor = resolveArrayListColor(
-            cSettings.theme as ArrayListThemeName,
-            index,
-            enabledModules.length,
-            colorTime,
-            GLOBAL_PRIMARY,
-            GLOBAL_SECONDARY,
-            cSettings.customPrimary,
-            cSettings.customSecondary,
-        )}
         <div
                 class="module"
                 class:background-off={cSettings.background === "Off"}
@@ -150,7 +153,7 @@
                 class:border-none={cSettings.border === "None"}
                 class:border-accent={cSettings.border === "Accent"}
                 class:border-item={cSettings.border === "Item"}
-                style={`--arraylist-item-color: ${rgb(itemColor)}; --arraylist-glow-color: ${rgb(itemColor)}; --arraylist-alpha: ${backgroundAlpha()}%;`}
+                style={`--arraylist-item-color: ${colorFor(index)}; --arraylist-alpha: ${backgroundAlpha()}%;`}
                 animate:flip={{duration: animationDuration}}
                 transition:fly={{x: cSettings.itemAlignment === "Right" ? 50 : -50, duration: animationDuration}}
         >

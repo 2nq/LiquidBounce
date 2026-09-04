@@ -26,4 +26,9 @@ describe("ArrayList theme colors", () => {
         expect(resolveArrayListColor("Rainbow", 0, 3, 0, 0, 0, 0, 0))
             .not.toBe(resolveArrayListColor("Rainbow", 0, 3, 3000, 0, 0, 0, 0));
     });
+
+    it("animates preset gradients with time", () => {
+        expect(resolveArrayListColor("Blend", 0, 3, 0, 0, 0, 0, 0))
+            .not.toBe(resolveArrayListColor("Blend", 0, 3, 3000, 0, 0, 0, 0));
+    });
 });

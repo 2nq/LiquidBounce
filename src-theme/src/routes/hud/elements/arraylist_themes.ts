@@ -60,6 +60,17 @@ function clamp(value: number, min = 0, max = 1): number {
     return Math.max(min, Math.min(max, value));
 }
 
+/**
+ * Moves the gradient toward the second stop and back smoothly. Starting at
+ * zero keeps the configured gradient endpoints intact when the HUD appears,
+ * while the changing phase makes the colour visibly travel through the list.
+ */
+function gradientShift(now: number): number {
+    const cycle = 8000;
+    const progress = ((now % cycle) + cycle) % cycle / cycle;
+    return progress <= 0.5 ? progress * 0.9 : (1 - progress) * 0.9;
+}
+
 export function interpolateColor(a: number, b: number, factor: number): number {
     const t = clamp(factor);
     const ar = (a >> 16) & 0xff;
@@ -107,7 +118,8 @@ export function resolveArrayListColor(
             ? [customPrimary, customSecondary]
             : (ARRAYLIST_THEMES.find(entry => entry.name === theme)?.colors ?? [globalPrimary, globalSecondary]);
 
-    const factor = count <= 1 ? 0 : clamp(index / (count - 1));
+    const baseFactor = count <= 1 ? 0 : clamp(index / (count - 1));
+    const factor = clamp(baseFactor + gradientShift(now));
     const [first, second, third] = selected;
     if (third === undefined || factor <= 0.5) {
         return interpolateColor(first, second, third === undefined ? factor : factor * 2);
