@@ -31,4 +31,5 @@ describe("ArrayList theme colors", () => {
         expect(resolveArrayListColor("Blend", 0, 3, 0, 0, 0, 0, 0))
             .not.toBe(resolveArrayListColor("Blend", 0, 3, 3000, 0, 0, 0, 0));
     });
+
 });

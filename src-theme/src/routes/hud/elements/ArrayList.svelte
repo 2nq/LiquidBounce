@@ -157,7 +157,7 @@
                 animate:flip={{duration: animationDuration}}
                 transition:fly={{x: cSettings.itemAlignment === "Right" ? 50 : -50, duration: animationDuration}}
         >
-            {module.displayName}
+            <span class="module-name">{module.displayName}</span>
             {#if module.displayTag && cSettings.showTags}
                 <span class="tag"> {module.displayTag}</span>
             {/if}
@@ -194,14 +194,14 @@
 
   .module {
     background-color: color-mix(in srgb, var(--arraylist-base-color) var(--arraylist-alpha), transparent);
-    color: var(--arraylist-item-color);
+    color: var(--arraylist-tag-color);
     font-size: 14px;
     border-radius: 4px 0 0 4px;
     padding: 5px 8px;
     border-left: solid 3px var(--arraylist-border-color);
     width: max-content;
     font-weight: 500;
-    transition: color 160ms ease, background-color 160ms ease, filter 160ms ease;
+    transition: background-color 160ms ease, box-shadow 160ms ease;
 
     &.background-off {
       background-color: transparent;
@@ -215,20 +215,25 @@
       border-left-color: var(--arraylist-item-color);
     }
 
-    &.glow-soft {
-      filter: drop-shadow(0 0 4px var(--arraylist-glow-color));
-    }
-
-    &.glow-strong {
-      filter: drop-shadow(0 0 8px var(--arraylist-glow-color));
-    }
-
     &.shadow {
       box-shadow: 0 3px 8px var(--arraylist-shadow-color);
     }
   }
 
+  .module-name {
+    color: var(--arraylist-item-color);
+    transition: color 160ms ease, text-shadow 160ms ease;
+  }
+
+  .module.glow-soft .module-name {
+    text-shadow: 0 0 4px var(--arraylist-glow-color);
+  }
+
+  .module.glow-strong .module-name {
+    text-shadow: 0 0 8px var(--arraylist-glow-color);
+  }
+
   .tag {
-    color: color-mix(in srgb, var(--arraylist-item-color) 55%, var(--arraylist-tag-color));
+    color: var(--arraylist-tag-color);
   }
 </style>
