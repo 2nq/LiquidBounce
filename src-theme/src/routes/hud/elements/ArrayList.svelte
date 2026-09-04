@@ -78,6 +78,7 @@
     let colorTime = Date.now();
     let animationDuration = DEFAULTS.animationSpeed;
     let enabledModules: RenderModule[] = [];
+    let itemColors: string[] = [];
 
     async function updateEnabledModules() {
         const modules = await getModules();
@@ -103,8 +104,7 @@
     }
 
     $: animationDuration = boundedAnimationSpeed(cSettings.animationSpeed);
-    function colorFor(index: number): string {
-        return rgb(resolveArrayListColor(
+    $: itemColors = enabledModules.map((_, index) => rgb(resolveArrayListColor(
             cSettings.theme as ArrayListThemeName,
             index,
             enabledModules.length,
@@ -113,8 +113,7 @@
             GLOBAL_SECONDARY,
             cSettings.customPrimary,
             cSettings.customSecondary,
-        ));
-    }
+        )));
 
     $: {
         const nextSignature = JSON.stringify(settings);
@@ -132,8 +131,14 @@
 
     onMount(() => {
         void updateEnabledModules();
-        const timer = window.setInterval(() => colorTime = Date.now(), 100);
-        return () => window.clearInterval(timer);
+        let frame = 0;
+        const animateColors = (now: number) => {
+            colorTime = now;
+            frame = window.requestAnimationFrame(animateColors);
+        };
+
+        frame = window.requestAnimationFrame(animateColors);
+        return () => window.cancelAnimationFrame(frame);
     });
 
     listen("moduleToggle", async () => await updateEnabledModules());
@@ -153,7 +158,7 @@
                 class:border-none={cSettings.border === "None"}
                 class:border-accent={cSettings.border === "Accent"}
                 class:border-item={cSettings.border === "Item"}
-                style={`--arraylist-item-color: ${colorFor(index)}; --arraylist-alpha: ${backgroundAlpha()}%;`}
+                style={`--arraylist-item-color: ${itemColors[index] ?? rgb(GLOBAL_PRIMARY)}; --arraylist-alpha: ${backgroundAlpha()}%;`}
                 animate:flip={{duration: animationDuration}}
                 transition:fly={{x: cSettings.itemAlignment === "Right" ? 50 : -50, duration: animationDuration}}
         >
@@ -222,7 +227,7 @@
 
   .module-name {
     color: var(--arraylist-item-color);
-    transition: color 160ms ease, text-shadow 160ms ease;
+    transition: text-shadow 160ms ease;
   }
 
   .module.glow-soft .module-name {
