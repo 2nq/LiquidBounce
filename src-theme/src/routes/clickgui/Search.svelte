@@ -221,10 +221,10 @@
     transform: translateX(-50%);
     background-color: var(--clickgui-search-background-color);
     width: 600px;
-    border-radius: 30px;
+    border-radius: 8px;
     overflow: hidden;
     transition: ease border-radius 0.2s;
-    box-shadow: 0 0 10px var(--clickgui-search-shadow-color);
+    box-shadow: 0 8px 24px var(--clickgui-search-shadow-color);
 
     &.has-results {
       border-radius: 10px;
