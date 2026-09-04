@@ -70,17 +70,17 @@ A pesquisa fica no topo da sidebar. Enquanto tiver texto, substitui a lista de c
 
 ### HUD Editor e Client Settings
 
-`HUD Editor` e `Client Settings` aparecem no fim da sidebar e reutilizam os componentes atuais `HudEditor.svelte` e `GlobalSettings.svelte` dentro da área principal. A tab superior atual deixa de ser necessária no modo Rise; continua visível e inalterada no modo Panels durante a primeira entrega. No modo Rise, mudar para estas áreas não perde a categoria selecionada.
+`HUD Editor` e `Client Settings` aparecem no fim da sidebar. `Client Settings` reutiliza o conteúdo de `GlobalSettings.svelte` dentro da área principal. O HUD Editor precisa do viewport inteiro para que coordenadas, snapping e âncoras continuem corretos; por isso o botão troca temporariamente a janela pela vista fullscreen existente e apresenta um controlo para regressar ao Rise. A tab superior atual deixa de aparecer na vista principal do modo Rise e continua inalterada no modo Panels. Mudar para estas áreas não perde a categoria selecionada.
 
 ## Componentes e responsabilidades
 
-- `TabbedClickGui.svelte`: carrega os valores do módulo ClickGUI e escolhe entre `Rise` e `Panels`.
+- `TabbedClickGui.svelte`: carrega os valores do módulo ClickGUI, escolhe entre `Rise` e `Panels` e coordena a entrada/saída do HUD Editor fullscreen.
 - `RiseClickGui.svelte`: coordena carregamento, seleção de vista, pesquisa e eventos de módulos.
 - `RiseSidebar.svelte`: apresenta pesquisa, categorias e destinos utilitários.
 - `RiseModuleList.svelte`: renderiza módulos da categoria ou resultados de pesquisa e emite ações.
 - `RiseModuleDetails.svelte`: carrega, apresenta e persiste settings do módulo selecionado.
 - `rise_clickgui_state.ts`: contém tipos e funções puras para seleção inicial, filtragem e transições de vista.
-- componentes existentes `GenericSetting`, `HudEditor` e `GlobalSettings`: continuam a executar a lógica já testada.
+- componentes existentes `GenericSetting` e `HudEditor`, mais o conteúdo extraído de `GlobalSettings`: continuam a executar a lógica já testada.
 
 Os componentes novos recebem dados e callbacks explícitos. Apenas o coordenador fala diretamente com o websocket para estado global; a página de detalhes usa as funções REST existentes para carregar e guardar a configuração selecionada.
 
@@ -117,7 +117,7 @@ Não serão alterados nomes de settings, formatos de módulos, binds ou storage 
 - clique direito não abre o menu do browser e navega para detalhes;
 - detalhe carrega todos os settings e persiste alterações pela API existente;
 - eventos externos `moduleToggle` atualizam a linha aberta e os resultados de pesquisa;
-- categorias, pesquisa, voltar, HUD Editor e Client Settings são navegáveis;
+- categorias, pesquisa, voltar, HUD Editor fullscreen e Client Settings são navegáveis;
 - listas longas e settings extensos permanecem dentro da janela e têm scroll;
 - `Layout=Panels` mantém o ClickGUI Neon, arrasto, snapping e storage atuais;
 - `Layout=Rise` não lê nem apaga posições dos painéis;
