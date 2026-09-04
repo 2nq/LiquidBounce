@@ -9,6 +9,7 @@
     "verticalAlignment": "Top",
     "verticalOffset": 0
   },
+  "tweaks": ["DISABLE_STATUS_EFFECT_OVERLAY"],
   "values": [
     {
       "type": "BOOLEAN",

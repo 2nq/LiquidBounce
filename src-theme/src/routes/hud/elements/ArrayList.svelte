@@ -236,6 +236,7 @@
   }
 
   .module {
+    box-sizing: content-box;
     background-color: color-mix(in srgb, var(--arraylist-base-color) var(--arraylist-alpha), transparent);
     color: var(--arraylist-tag-color);
     font-size: 14px;
