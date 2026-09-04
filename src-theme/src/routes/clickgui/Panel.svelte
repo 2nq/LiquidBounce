@@ -9,6 +9,7 @@
     import {
         gridSize,
         highlightModuleName,
+        layoutReset,
         maxPanelZIndex,
         scaleFactor,
         showGrid,
@@ -30,8 +31,6 @@
 
     let scrollPositionSaveTimeout: number | undefined;
 
-    const panelConfig = loadPanelConfig();
-
     let ignoreGrid = false;
 
     interface PanelConfig {
@@ -46,15 +45,40 @@
         return Math.max(min, Math.min(number, max));
     }
 
+    const INITIAL_PANEL_WIDTH = 250;
+    const INITIAL_PANEL_GAP = 16;
+    const INITIAL_PANEL_MARGIN = 24;
+    const INITIAL_PANEL_ROW_HEIGHT = 120;
+
+    function initialPanelPosition(index: number): { top: number; left: number } {
+        const viewportWidth = typeof document === "undefined"
+            ? 960
+            : document.documentElement.clientWidth;
+        const availableWidth = viewportWidth * (2 / $scaleFactor);
+        const columns = Math.max(
+            1,
+            Math.floor((availableWidth - INITIAL_PANEL_MARGIN * 2 + INITIAL_PANEL_GAP) /
+                (INITIAL_PANEL_WIDTH + INITIAL_PANEL_GAP))
+        );
+
+        return {
+            left: INITIAL_PANEL_MARGIN + (index % columns) * (INITIAL_PANEL_WIDTH + INITIAL_PANEL_GAP),
+            top: INITIAL_PANEL_MARGIN + Math.floor(index / columns) * INITIAL_PANEL_ROW_HEIGHT,
+        };
+    }
+
+    const panelConfig = loadPanelConfig();
+
     function loadPanelConfig(): PanelConfig {
         const localStorageItem = localStorage.getItem(
             `clickgui.panel.${category}`,
         );
 
         if (!localStorageItem) {
+            const position = initialPanelPosition(panelIndex);
             return {
-                top: panelIndex * 50 + 20,
-                left: 20,
+                top: position.top,
+                left: position.left,
                 expanded: false,
                 scrollTop: 0,
                 zIndex: 0
@@ -160,13 +184,15 @@
 
     onMount(() => {
         if (!modulesElement) {
-            return;
+            return unsubscribeLayoutReset;
         }
 
         modulesElement.scrollTo({
             top: panelConfig.scrollTop,
             behavior: "smooth"
         });
+
+        return unsubscribeLayoutReset;
     });
 
     listen("keyboardKey", (e: KeyboardKeyEvent) => {
@@ -180,6 +206,21 @@
 
         return Math.round(value / $gridSize) * $gridSize;
     }
+
+    let receivedLayoutReset = false;
+    const unsubscribeLayoutReset = layoutReset.subscribe(() => {
+        if (!receivedLayoutReset) {
+            receivedLayoutReset = true;
+            return;
+        }
+
+        const position = initialPanelPosition(panelIndex);
+        panelConfig.left = position.left;
+        panelConfig.top = position.top;
+        panelConfig.zIndex = panelIndex;
+        fixPosition();
+        savePanelConfig();
+    });
 </script>
 
 <svelte:window on:mouseup={onMouseUp} on:mousemove={onMouseMove}/>
@@ -224,7 +265,7 @@
 <style lang="scss">
 
   .panel {
-    border-radius: 5px;
+    border-radius: 6px;
     width: 250px;
     position: absolute;
     overflow: hidden;
@@ -238,11 +279,17 @@
     display: grid;
     grid-template-columns: max-content 1fr max-content;
     align-items: center;
-    column-gap: 12px;
+    column-gap: 10px;
+    min-height: 40px;
     background-color: var(--clickgui-panel-header-background-color);
-    border-bottom: solid 2px var(--clickgui-panel-header-border-color);
-    padding: 10px 15px;
+    border-bottom: solid 1px var(--clickgui-panel-header-border-color);
+    padding: 8px 12px;
     cursor: grab;
+    transition: background-color 160ms ease, border-color 160ms ease;
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--clickgui-panel-header-background-color) 90%, var(--accent-color));
+    }
 
     .category {
       font-size: 14px;
@@ -258,6 +305,7 @@
     overflow-y: auto;
     overflow-x: hidden;
     background-color: var(--clickgui-panel-body-background-color);
+    scrollbar-color: var(--accent-color) transparent;
 
     &.expanded {
       max-height: 545px;

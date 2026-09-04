@@ -16,6 +16,75 @@
       "value": true
     },
     {
+      "type": "BOOLEAN",
+      "name": "Lowercase",
+      "value": false
+    },
+    {
+      "type": "CHOOSE",
+      "name": "Theme",
+      "value": "Blend",
+      "choices": [
+        "Global", "Custom", "Rainbow", "Aubergine", "Aqua", "Banana", "Blend", "Blossom", "Bubblegum",
+        "Candy Cane", "Cherry", "Christmas", "Coral", "Digital Horizon", "Express", "Lime Water", "Lush",
+        "Halogen", "Hyper", "Magic", "May", "Orange Juice", "Pastel", "Pumpkin", "Satin", "Snowy Sky",
+        "Steel Fade", "Sundae", "Sunkist", "Water", "Legacy", "Winter", "Peony", "Shadow", "Wood", "Creida",
+        "Creida Two", "Gothic", "Rue", "Purple", "Nord"
+      ]
+    },
+    {
+      "type": "COLOR",
+      "name": "CustomPrimary",
+      "value": 4287393023
+    },
+    {
+      "type": "COLOR",
+      "name": "CustomSecondary",
+      "value": 4283034326
+    },
+    {
+      "type": "CHOOSE",
+      "name": "Background",
+      "value": "Translucent",
+      "choices": ["Off", "Solid", "Translucent"]
+    },
+    {
+      "type": "INT",
+      "name": "BackgroundAlpha",
+      "value": 68,
+      "range": {"min": 0, "max": 100}
+    },
+    {
+      "type": "CHOOSE",
+      "name": "Glow",
+      "value": "Off",
+      "choices": ["Off", "Soft", "Strong"]
+    },
+    {
+      "type": "BOOLEAN",
+      "name": "Shadow",
+      "value": false
+    },
+    {
+      "type": "CHOOSE",
+      "name": "Animation",
+      "value": "Slide",
+      "choices": ["Slide"]
+    },
+    {
+      "type": "INT",
+      "name": "AnimationSpeed",
+      "value": 200,
+      "range": {"min": 50, "max": 1000},
+      "suffix": "ms"
+    },
+    {
+      "type": "CHOOSE",
+      "name": "Border",
+      "value": "Accent",
+      "choices": ["None", "Accent", "Item"]
+    },
+    {
       "type": "CHOOSE",
       "name": "ItemAlignment",
       "value": "Right",

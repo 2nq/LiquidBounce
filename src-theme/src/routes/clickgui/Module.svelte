@@ -158,7 +158,11 @@
       font-size: 12px;
       font-weight: 500;
       position: relative;
-      padding: 10px;
+      min-height: 34px;
+      padding: 9px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       &.highlight::before {
         content: "";
