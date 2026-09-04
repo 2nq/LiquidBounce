@@ -17,7 +17,7 @@
 - Create: `src-theme/src/routes/clickgui/setting/common/dropdown_geometry.test.ts`
 - Modify: `src-theme/src/routes/clickgui/setting/common/Dropdown.svelte`
 
-- [ ] **Step 1: Write failing geometry tests**
+- [x] **Step 1: Write failing geometry tests**
 
 ```ts
 import {describe, expect, it} from "vitest";
@@ -47,13 +47,13 @@ describe("dropdown geometry", () => {
 });
 ```
 
-- [ ] **Step 2: Run the test and verify RED**
+- [x] **Step 2: Run the test and verify RED**
 
 Run: `cd src-theme && npm run test:unit -- --run src/routes/clickgui/setting/common/dropdown_geometry.test.ts`
 
 Expected: FAIL because `dropdown_geometry.ts` does not exist.
 
-- [ ] **Step 3: Implement the geometry helper**
+- [x] **Step 3: Implement the geometry helper**
 
 ```ts
 export interface DropdownGeometry {
@@ -82,7 +82,7 @@ export function resolveDropdownGeometry(
 }
 ```
 
-- [ ] **Step 4: Integrate geometry and internal scrolling**
+- [x] **Step 4: Integrate geometry and internal scrolling**
 
 In `Dropdown.svelte`, bind the portalled options element, calculate either `top` or `bottom`, write `--dropdown-max-height`, and ignore scroll events originating inside the options:
 
@@ -105,7 +105,7 @@ function windowScrollHide(event: Event) {
 }
 ```
 
-- [ ] **Step 5: Verify and commit**
+- [x] **Step 5: Verify and commit**
 
 Run: `cd src-theme && npm run test:unit && npm run check`
 
@@ -123,7 +123,7 @@ git commit -m "fix(clickgui): constrain long dropdowns"
 - Modify: `src-theme/src/routes/hud/elements/arraylist_themes.test.ts`
 - Modify: `src-theme/src/routes/hud/elements/ArrayList.svelte`
 
-- [ ] **Step 1: Replace the existing preset-time test with exact Rise-wave tests**
+- [x] **Step 1: Replace the existing preset-time test with exact Rise-wave tests**
 
 ```ts
 import {riseBlendFactor} from "./arraylist_themes";
@@ -142,13 +142,13 @@ it("changes preset colours over time", () => {
 });
 ```
 
-- [ ] **Step 2: Run the test and verify RED**
+- [x] **Step 2: Run the test and verify RED**
 
 Run: `cd src-theme && npm run test:unit -- --run src/routes/hud/elements/arraylist_themes.test.ts`
 
 Expected: FAIL because `riseBlendFactor` is not exported and the current clamped shift does not implement the Rise formula.
 
-- [ ] **Step 3: Implement the Rise wave**
+- [x] **Step 3: Implement the Rise wave**
 
 ```ts
 const RISE_ROW_SPACING = 12;
@@ -161,7 +161,7 @@ export function riseBlendFactor(index: number, now: number): number {
 
 Use `riseBlendFactor(index, now)` for every two/three-colour preset, `Global`, and `Custom`. Keep `Rainbow` as its own hue cycle.
 
-- [ ] **Step 4: Make colour time explicitly reactive**
+- [x] **Step 4: Make colour time explicitly reactive**
 
 Replace the template helper and 100 ms interval with `requestAnimationFrame` and a reactive array whose expression directly reads `colorTime`:
 
@@ -194,7 +194,7 @@ onMount(() => {
 
 Use `itemColors[index]` as `--arraylist-item-color` and remove the long colour transition so every rendered frame is visible.
 
-- [ ] **Step 5: Verify and commit**
+- [x] **Step 5: Verify and commit**
 
 Run: `cd src-theme && npm run test:unit && npm run check`
 
@@ -214,7 +214,7 @@ git commit -m "fix(arraylist): use reactive Rise color wave"
 - Modify: `src-theme/src/routes/hud/components.d.ts`
 - Modify: `src-theme/src/routes/hud/elements/ArrayList.svelte`
 
-- [ ] **Step 1: Write failing scale tests**
+- [x] **Step 1: Write failing scale tests**
 
 ```ts
 import {describe, expect, it} from "vitest";
@@ -232,13 +232,13 @@ describe("ArrayList scale", () => {
 });
 ```
 
-- [ ] **Step 2: Run the test and verify RED**
+- [x] **Step 2: Run the test and verify RED**
 
 Run: `cd src-theme && npm run test:unit -- --run src/routes/hud/elements/arraylist_layout.test.ts`
 
 Expected: FAIL because `arraylist_layout.ts` does not exist.
 
-- [ ] **Step 3: Implement scale resolution and configuration**
+- [x] **Step 3: Implement scale resolution and configuration**
 
 ```ts
 export function resolveArrayListScale(value: unknown): number {
@@ -249,7 +249,7 @@ export function resolveArrayListScale(value: unknown): number {
 
 Add a `FLOAT` setting named `Scale`, default `1.0`, range `0.5..2.0`, and add `scale: number` to `HudArrayListSettings` and the local settings interface/defaults.
 
-- [ ] **Step 4: Apply scale, explicit widths, easing, and contiguous backgrounds**
+- [x] **Step 4: Apply scale, explicit widths, easing, and contiguous backgrounds**
 
 Apply `style:zoom={resolveArrayListScale(cSettings.scale)}` to the ArrayList root. Add `--arraylist-content-width: ${module.width}px` per row, use `width: var(--arraylist-content-width)`, `white-space: nowrap`, and `overflow: hidden` with a width transition. Change `gap` to `0`, shorten `fly` to 16 px, use `quintOut`, and give only the first/last visible rows outer corner radii.
 
@@ -262,7 +262,7 @@ transition:fly={{
 }}
 ```
 
-- [ ] **Step 5: Verify and commit**
+- [x] **Step 5: Verify and commit**
 
 Run: `cd src-theme && npm run test:unit && npm run check && npm run build`
 
@@ -278,11 +278,11 @@ git commit -m "feat(arraylist): add scaling and smooth row sizing"
 **Files:**
 - Verify only: `build/libs/liquidbounce-0.40.1.jar`
 
-- [ ] **Step 1: Stop the running development client**
+- [x] **Step 1: Stop the running development client**
 
 Send Ctrl+C to the existing `runClient` process so Windows releases Gradle resource outputs.
 
-- [ ] **Step 2: Run the complete build on Java 25**
+- [x] **Step 2: Run the complete build on Java 25**
 
 ```powershell
 $env:JAVA_HOME='C:\Program Files\Java\jdk-25.0.4'
@@ -292,7 +292,7 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Expected: `BUILD SUCCESSFUL`; the existing large Vite chunk warning is allowed.
 
-- [ ] **Step 3: Launch the development client**
+- [x] **Step 3: Launch the development client**
 
 ```powershell
 ./gradlew.bat runClient
