@@ -6,14 +6,17 @@
     import {getTextWidth} from "../../../integration/text_measurement";
     import {flip} from "svelte/animate";
     import {fly} from "svelte/transition";
+    import {quintOut} from "svelte/easing";
     import {convertToSpacedString, spaceSeperatedNames} from "../../../theme/theme_config";
     import {resolveArrayListColor, type ArrayListThemeName} from "./arraylist_themes";
+    import {resolveArrayListScale} from "./arraylist_layout";
 
     export let settings: { [name: string]: any };
 
     interface ArrayListSettings {
         showTags: boolean;
         lowercase: boolean;
+        scale: number;
         itemAlignment: "Left" | "Right";
         order: "Ascending" | "Descending";
         theme: string;
@@ -31,6 +34,7 @@
     const DEFAULTS: ArrayListSettings = {
         showTags: true,
         lowercase: false,
+        scale: 1,
         itemAlignment: "Right",
         order: "Descending",
         theme: "Blend",
@@ -145,7 +149,12 @@
     listen("refreshArrayList", async () => await updateEnabledModules());
 </script>
 
-<div class="arraylist" class:align-left={cSettings.itemAlignment === "Left"} class:align-right={cSettings.itemAlignment === "Right"}>
+<div
+        class="arraylist"
+        class:align-left={cSettings.itemAlignment === "Left"}
+        class:align-right={cSettings.itemAlignment === "Right"}
+        style:zoom={resolveArrayListScale(cSettings.scale)}
+>
     {#each enabledModules as module, index (module.name)}
         <div
                 class="module"
@@ -158,9 +167,13 @@
                 class:border-none={cSettings.border === "None"}
                 class:border-accent={cSettings.border === "Accent"}
                 class:border-item={cSettings.border === "Item"}
-                style={`--arraylist-item-color: ${itemColors[index] ?? rgb(GLOBAL_PRIMARY)}; --arraylist-alpha: ${backgroundAlpha()}%;`}
-                animate:flip={{duration: animationDuration}}
-                transition:fly={{x: cSettings.itemAlignment === "Right" ? 50 : -50, duration: animationDuration}}
+                style={`--arraylist-item-color: ${itemColors[index] ?? rgb(GLOBAL_PRIMARY)}; --arraylist-alpha: ${backgroundAlpha()}%; --arraylist-content-width: ${module.width}px; --arraylist-animation-duration: ${animationDuration}ms;`}
+                animate:flip={{duration: animationDuration, easing: quintOut}}
+                transition:fly={{
+                    x: cSettings.itemAlignment === "Right" ? 16 : -16,
+                    duration: animationDuration,
+                    easing: quintOut,
+                }}
         >
             <span class="module-name">{module.displayName}</span>
             {#if module.displayTag && cSettings.showTags}
@@ -174,12 +187,12 @@
   .arraylist {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 0;
     width: 100%;
 
     &.align-left .module {
       margin-right: auto;
-      border-radius: 0 4px 4px 0;
+      border-radius: 0;
       border-left: none;
 
       &.border-accent,
@@ -194,6 +207,31 @@
 
     &.align-right .module {
       margin-left: auto;
+      border-radius: 0;
+    }
+
+    &.align-left .module:first-child {
+      border-radius: 0 4px 0 0;
+    }
+
+    &.align-left .module:last-child {
+      border-radius: 0 0 4px 0;
+    }
+
+    &.align-left .module:only-child {
+      border-radius: 0 4px 4px 0;
+    }
+
+    &.align-right .module:first-child {
+      border-radius: 4px 0 0 0;
+    }
+
+    &.align-right .module:last-child {
+      border-radius: 0 0 0 4px;
+    }
+
+    &.align-right .module:only-child {
+      border-radius: 4px 0 0 4px;
     }
   }
 
@@ -201,12 +239,17 @@
     background-color: color-mix(in srgb, var(--arraylist-base-color) var(--arraylist-alpha), transparent);
     color: var(--arraylist-tag-color);
     font-size: 14px;
-    border-radius: 4px 0 0 4px;
+    border-radius: 0;
     padding: 5px 8px;
     border-left: solid 3px var(--arraylist-border-color);
-    width: max-content;
+    width: var(--arraylist-content-width);
     font-weight: 500;
-    transition: background-color 160ms ease, box-shadow 160ms ease;
+    white-space: nowrap;
+    overflow: hidden;
+    will-change: transform, opacity, width;
+    transition: width var(--arraylist-animation-duration) cubic-bezier(0.22, 1, 0.36, 1),
+                background-color 160ms ease,
+                box-shadow 160ms ease;
 
     &.background-off {
       background-color: transparent;
