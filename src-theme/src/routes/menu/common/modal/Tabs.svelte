@@ -38,6 +38,11 @@
         return content;
     });
 
+    const ActiveSubTabs = $derived.by(() => {
+        const content = tabs[activeTab]?.content;
+        return Array.isArray(content) ? content as SubTab[] : [];
+    });
+
     function setActiveTab(i: number) {
         activeTab = i;
         onChangeTab?.(activeTab);
@@ -66,7 +71,7 @@
     <div style="width: {availableTabsElement?.clientWidth}px">
         {#if Array.isArray(tabs[activeTab]?.content)}
             <div class="available-sub-tabs">
-                {#each tabs[activeTab].content as subTab, index (subTab.title)}
+                {#each ActiveSubTabs as subTab, index (subTab.title)}
                     <button
                             class="sub-tab-button"
                             class:active={index === (activeSubTabs[activeTab] ?? 0)}

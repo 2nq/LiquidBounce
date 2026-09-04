@@ -217,6 +217,9 @@
   --arraylist-tag-color: #aaaaaa;
   --arraylist-background-color: color-mix(in srgb, var(--arraylist-base-color) 68%, transparent);
   --arraylist-border-color: var(--accent-color);
+  --arraylist-background-solid-color: color-mix(in srgb, var(--arraylist-base-color) var(--arraylist-alpha, 68%), transparent);
+  --arraylist-glow-color: var(--arraylist-item-color, var(--accent-color));
+  --arraylist-shadow-color: color-mix(in srgb, black 65%, transparent);
 
   --targethud-base-color: var(--surface-color);
   --targethud-text-color: var(--text-color);
