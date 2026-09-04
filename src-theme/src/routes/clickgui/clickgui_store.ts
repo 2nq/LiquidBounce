@@ -24,3 +24,10 @@ export const snappingEnabled: Writable<boolean> = writable(true);
 export const gridSize: Writable<number> = writable(10);
 
 export const darken = writable(true);
+
+/** Incremented whenever every ClickGUI panel should return to its initial layout. */
+export const layoutReset: Writable<number> = writable(0);
+
+export function requestLayoutReset(): void {
+    layoutReset.update(value => value + 1);
+}
