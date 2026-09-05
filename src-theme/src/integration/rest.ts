@@ -68,13 +68,14 @@ export async function getModuleSettings(name: string): Promise<ConfigurableSetti
 export async function setModuleSettings(name: string, settings: ConfigurableSetting) {
     const searchParams = new URLSearchParams({name});
 
-    await fetch(`${API_BASE}/client/modules/settings?${searchParams.toString()}`, {
+    const response = await fetch(`${API_BASE}/client/modules/settings?${searchParams.toString()}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify(settings)
     });
+    if (!response.ok) throw new Error(`Saving module settings failed: ${response.status}`);
 }
 
 export async function getSpooferSettings(): Promise<ConfigurableSetting> {
@@ -112,7 +113,7 @@ export async function setGlobalSettings(settings: ConfigurableSetting) {
 }
 
 export async function setModuleEnabled(name: string, enabled: boolean) {
-    await fetch(`${API_BASE}/client/modules/toggle`, {
+    const response = await fetch(`${API_BASE}/client/modules/toggle`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -122,6 +123,7 @@ export async function setModuleEnabled(name: string, enabled: boolean) {
             enabled
         })
     });
+    if (!response.ok) throw new Error(`Toggling module failed: ${response.status}`);
 }
 
 export async function getPersistentStorageItems(): Promise<PersistentStorageItem[]> {

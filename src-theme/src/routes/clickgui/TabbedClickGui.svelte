@@ -1,5 +1,6 @@
 <script lang="ts">
     import ClickGui from "./ClickGui.svelte";
+    import RiseClickGui from "./rise/RiseClickGui.svelte";
     import GlobalSettings from "./tabs/GlobalSettings.svelte";
     import Tabs from "./tabs/Tabs.svelte";
     import {gridSize, os, scaleFactor, snappingEnabled, darken} from "./clickgui_store";
@@ -23,6 +24,7 @@
     ];
 
     let activeTab = $state(0);
+    let layout = $state("Rise");
     let minecraftScaleFactor = $state(2);
     let clickGuiScaleFactor = $state(1);
 
@@ -31,6 +33,7 @@
     });
 
     function applyValues(configurable: ConfigurableSetting) {
+        layout = configurable.value.find(v => v.name === "Layout")?.value as string ?? "Rise";
         const scaleValue = configurable.value.find(v => v.name === "Scale");
         const snappingValue = configurable.value.find(v => v.name === "Snapping") as TogglableSetting | undefined;
 
@@ -71,7 +74,7 @@
         class="tabbed-clickgui"
         class:darken={$darken}
 >
-    <Tabs {tabs} bind:activeTab/>
+    {#if layout === "Panels"}<Tabs {tabs} bind:activeTab/>{:else}<RiseClickGui/>{/if}
 </div>
 
 <style lang="scss">

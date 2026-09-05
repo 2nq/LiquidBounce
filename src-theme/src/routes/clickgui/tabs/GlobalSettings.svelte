@@ -6,6 +6,7 @@
     import WindowPanel from "./WindowPanel.svelte";
     import ScaledClickGuiContent from "../ScaledClickGuiContent.svelte";
 
+    let {embedded = false} = $props<{embedded?: boolean}>();
     let globalSettings = $state<ConfigurableSettingData | null>(null);
 
     async function fetchGlobalSettings() {
@@ -24,8 +25,7 @@
     });
 </script>
 
-<ScaledClickGuiContent>
-    <WindowPanel title="Global Settings" icon="client">
+{#snippet settingsContent()}
         <div class="settings-grid">
             {#if globalSettings}
                 {#each globalSettings.value as _, i (globalSettings.value[i].name)}
@@ -43,8 +43,12 @@
                 {/each}
             {/if}
         </div>
-    </WindowPanel>
-</ScaledClickGuiContent>
+{/snippet}
+{#if embedded}
+    {@render settingsContent()}
+{:else}
+    <ScaledClickGuiContent><WindowPanel title="Global Settings" icon="client">{@render settingsContent()}</WindowPanel></ScaledClickGuiContent>
+{/if}
 
 <style lang="scss">
   .settings-grid {
