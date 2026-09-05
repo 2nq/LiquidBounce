@@ -8,6 +8,7 @@
     import {
         browse,
         exitClient,
+        getClientInfo,
         getClientUpdate,
         openScreen,
         toggleBackgroundShaderEnabled
@@ -19,8 +20,10 @@
     import {nextTitleMenuState, type TitleMenuState} from "./title_menu_state";
 
     let menuState: TitleMenuState = "regular";
+    let clientVersion = "";
 
     onMount(() => {
+        void getClientInfo().then(info => clientVersion = info.clientVersion).catch(() => {});
         setTimeout(async () => {
             const clientUpdate = await getClientUpdate();
 
@@ -78,23 +81,20 @@
         </div>
         </section>
 
-        <div class="additional-buttons" transition:fly|global={{duration: 700, y: 100}}>
-            <ButtonContainer>
-                <IconTextButton icon="icon-exit.svg" title="Exit" on:click={exitClient}/>
-                <IconTextButton icon="icon-change-background.svg" title="Toggle Shader"
+        <div class="utilities" in:fly|global={{duration: 170, y: 8}}>
+            <ButtonContainer compact>
+                <IconTextButton compact icon="icon-exit.svg" title="Exit" on:click={exitClient}/>
+                <IconTextButton compact icon="icon-change-background.svg" title="Background"
                                 on:click={toggleBackgroundShaderEnabled}/>
-            </ButtonContainer>
-        </div>
-
-        <div class="social-buttons" transition:fly|global={{duration: 700, y: 100}}>
-            <ButtonContainer>
-                <IconButton title="Forum" icon="nodebb" on:click={() => browse("MAINTAINER_FORUM")}/>
-                <IconButton title="GitHub" icon="github" on:click={() => browse("MAINTAINER_GITHUB")}/>
-                <IconButton title="Discord" icon="discord" on:click={() => browse("MAINTAINER_DISCORD")}/>
-                <IconButton title="Twitter" icon="twitter" on:click={() => browse("MAINTAINER_TWITTER")}/>
-                <IconButton title="YouTube" icon="youtube" on:click={() => browse("MAINTAINER_YOUTUBE")}/>
-                <IconTextButton title="liquidbounce.net" icon="icon-liquidbounce.net.svg"
+                <span class="utility-divider"></span>
+                <IconButton compact title="Forum" icon="nodebb" on:click={() => browse("MAINTAINER_FORUM")}/>
+                <IconButton compact title="GitHub" icon="github" on:click={() => browse("MAINTAINER_GITHUB")}/>
+                <IconButton compact title="Discord" icon="discord" on:click={() => browse("MAINTAINER_DISCORD")}/>
+                <IconButton compact title="Twitter" icon="twitter" on:click={() => browse("MAINTAINER_TWITTER")}/>
+                <IconButton compact title="YouTube" icon="youtube" on:click={() => browse("MAINTAINER_YOUTUBE")}/>
+                <IconTextButton compact title="liquidbounce.net" icon="icon-liquidbounce.net.svg"
                                 on:click={() => browse("CLIENT_WEBSITE")}/>
+                {#if clientVersion}<span class="version">v{clientVersion}</span>{/if}
             </ButtonContainer>
         </div>
     </div>
@@ -112,6 +112,7 @@
     .content {
         flex:1; min-height:0; position:relative; display:grid; place-items:center;
     }
+    .title-screen::before {content:"";position:absolute;inset:-50px;z-index:-1;background:var(--menu-title-overlay-background-color);backdrop-filter:blur(3px);pointer-events:none;}
 
     .command-panel {width:min(430px,calc(100vw - 64px)); padding:27px 28px 30px; border-radius:20px;
         background:var(--menu-title-panel-background-color); border:1px solid var(--menu-title-border-color);
@@ -131,13 +132,10 @@
 
     .button-set {display:flex; flex-direction:column; gap:8px;}
 
-    .additional-buttons {
-        position:absolute; left:0; bottom:0;
-    }
-
-    .social-buttons {
-        position:absolute; right:0; bottom:0;
-    }
+    .utilities {position:absolute; left:50%; bottom:0; transform:translateX(-50%);}
+    .utility-divider {width:1px;height:20px;background:var(--menu-title-border-color);margin:0 3px;}
+    .version {padding:0 9px;font-size:9px;color:#687180;white-space:nowrap;font-variant-numeric:tabular-nums;}
     @media(max-height:720px){.command-panel{padding:20px 22px 22px}.intro{padding-bottom:13px}.button-set{gap:6px}}
+    @supports not (backdrop-filter:blur(3px)){.title-screen::before{background:color-mix(in srgb,var(--surface-color) 80%,black)}}
     @media(prefers-reduced-motion:reduce){.button-set{animation:none!important}}
 </style>
