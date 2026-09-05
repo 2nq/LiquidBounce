@@ -203,3 +203,12 @@ Check completed steps and append exact automated results plus any remaining manu
 git add docs/superpowers/plans/2026-09-05-title-menu-rework.md
 git commit -m "docs(menu): record title rework verification"
 ```
+
+## Verification record
+
+- 2026-09-05: `npm run check` completed with 0 errors and 0 warnings.
+- 2026-09-05: `npm run test:unit` completed with 6 files and 22 tests passing.
+- 2026-09-05: `npm run build` completed successfully with 404 modules transformed.
+- 2026-09-05: `./gradlew.bat build` completed successfully with all 18 tasks executed or up-to-date.
+- 2026-09-05: `./gradlew.bat runClient` reached LiquidBounce browser initialization, loaded the bundled UI with HTTP 200, and displayed the title screen.
+- Pending user visual review: layout balance, account popup interaction, Realms, background toggle, small-window behavior, and subjective animation feel.
