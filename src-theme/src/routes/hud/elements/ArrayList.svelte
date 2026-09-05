@@ -9,7 +9,7 @@
     import {quintOut} from "svelte/easing";
     import {convertToSpacedString, spaceSeperatedNames} from "../../../theme/theme_config";
     import {resolveArrayListColor, type ArrayListThemeName} from "./arraylist_themes";
-    import {resolveArrayListScale} from "./arraylist_layout";
+    import {resolveArrayListZoom} from "./arraylist_layout";
 
     export let settings: { [name: string]: any };
 
@@ -153,7 +153,7 @@
         class="arraylist"
         class:align-left={cSettings.itemAlignment === "Left"}
         class:align-right={cSettings.itemAlignment === "Right"}
-        style:zoom={resolveArrayListScale(cSettings.scale)}
+        style:zoom={resolveArrayListZoom(cSettings.scale)}
 >
     {#each enabledModules as module, index (module.name)}
         <div
@@ -247,7 +247,6 @@
     font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
-    will-change: transform, opacity, width;
     transition: width var(--arraylist-animation-duration) cubic-bezier(0.22, 1, 0.36, 1),
                 background-color 160ms ease,
                 box-shadow 160ms ease;
