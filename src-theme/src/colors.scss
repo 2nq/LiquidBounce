@@ -160,7 +160,7 @@
   --menu-main-button-icon-foreground-color: var(--menu-title-button-icon-color);
   --menu-main-button-icon-hover-foreground-color: var(--menu-title-button-icon-hover-color);
   --menu-main-button-text-color: var(--menu-text-color);
-  --menu-title-overlay-background-color: color-mix(in srgb, var(--surface-color) 54%, black 46%);
+  --menu-title-overlay-background-color: color-mix(in srgb, var(--surface-color) 52%, transparent);
   --menu-title-panel-background-color: color-mix(in srgb, var(--surface-color) 91%, transparent);
   --menu-title-elevated-background-color: color-mix(in srgb, var(--surface-color) 95%, transparent);
   --menu-title-action-background-color: color-mix(in srgb, var(--surface-color) 88%, black);

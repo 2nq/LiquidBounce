@@ -1,7 +1,6 @@
 <script lang="ts">
     import LiquidBounceLogo from "../../../../components/LiquidBounceLogo.svelte";
     import Account from "./account/Account.svelte";
-    import AnimatedLogo from "./AnimatedLogo.svelte";
     import Notifications from "./Notifications.svelte";
     import {listen} from "../../../../integration/ws";
     import {location} from "svelte-spa-router";
@@ -11,9 +10,6 @@
         AccountManagerMessageEvent
     } from "../../../../integration/events";
     import {notification} from "./notification_store";
-    import {isAnniversary} from "../../../../util/utils";
-
-    $: showAnniversaryLogo = $location === "/title" && isAnniversary();
 
     listen("accountManagerAddition", (e: AccountManagerAdditionEvent) => {
         if (!e.error) {
@@ -61,17 +57,14 @@
         {#if $location === "/title"}
             <div class="title-brand"><strong>LB</strong><span>LiquidBounce</span></div>
         {:else}
-        <div class="logo" class:visible={showAnniversaryLogo} aria-hidden={!showAnniversaryLogo}>
-            <AnimatedLogo/>
-        </div>
+            <div class="logo visible">
+                <LiquidBounceLogo
+                        width="261.263px"
+                        height="98px"
+                        badgeFill="var(--accent-color)"
+                />
+            </div>
         {/if}
-        <div class="logo" class:visible={!showAnniversaryLogo} aria-hidden={showAnniversaryLogo}>
-            <LiquidBounceLogo
-                    width="261.263px"
-                    height="98px"
-                    badgeFill="var(--accent-color)"
-            />
-        </div>
     </div>
 
     <Notifications/>

@@ -53,6 +53,7 @@
       align-items: center;
       justify-content: center;
     }
+    .icon img {display:block;max-width:100%;max-height:100%;}
 
     .title {
       font-size: 20px;
@@ -64,7 +65,7 @@
     .icon-text-button.compact:not([disabled]):hover {background:#ffffff0a;transform:translateY(-1px);}
     .icon-text-button.compact:active {transform:translateY(0);}
     .icon-text-button.compact:focus-visible {outline:2px solid var(--accent-color);outline-offset:1px;}
-    .icon-text-button.compact .icon {width:34px;height:34px;background:transparent;padding:9px;}
+    .icon-text-button.compact .icon {width:34px;height:34px;background:transparent;padding:9px;box-sizing:border-box;flex:0 0 34px;}
     .icon-text-button.compact .title {font-size:10px;padding:0 10px 0 2px;color:var(--menu-text-dimmed-color);}
     @media(prefers-reduced-motion:reduce){.icon-text-button.compact{transition-duration:1ms!important}.icon-text-button.compact:not([disabled]):hover{transform:none}}
 </style>

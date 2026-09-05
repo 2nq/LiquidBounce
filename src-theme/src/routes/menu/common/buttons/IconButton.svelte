@@ -31,9 +31,10 @@
     justify-content: center;
     cursor: pointer;
   }
+  .icon img {display:block;max-width:100%;max-height:100%;}
   .icon-button.compact {transition:background-color 140ms ease,transform 140ms ease;}
   .icon-button.compact:hover {background:#ffffff0a;transform:translateY(-1px);}
   .icon-button.compact:active {transform:translateY(0);}
-  .icon-button.compact .icon {width:34px;height:34px;padding:9px;}
+  .icon-button.compact .icon {width:34px;height:34px;padding:9px;box-sizing:border-box;}
   @media(prefers-reduced-motion:reduce){.icon-button.compact{transition-duration:1ms!important}.icon-button.compact:hover{transform:none}}
 </style>
