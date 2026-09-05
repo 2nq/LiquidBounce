@@ -13,6 +13,7 @@
     let dropdownHead: HTMLElement;
     let optionsElement: HTMLElement | undefined;
     let optionsStyle = "";
+    let rise = false;
 
     function portal(node: HTMLElement) {
         document.body.appendChild(node);
@@ -40,10 +41,11 @@
     function updateValue(v: string) {
         value = v;
         expanded = false;
-        dispatch("change");
+        dispatch("change", v);
     }
 
     async function toggleExpanded() {
+        rise = !!dropdownHead.closest(".rise");
         expanded = !expanded;
         if (!expanded) {
             return;
@@ -94,7 +96,7 @@
     </div>
 
     {#if expanded}
-        <div class="options" style={optionsStyle} bind:this={optionsElement} use:portal>
+        <div class="options" class:rise-options={rise} style={optionsStyle} bind:this={optionsElement} use:portal>
             {#each options as o (o)}
                 <div
                         class="option"
@@ -110,7 +112,15 @@
 
 <style lang="scss">
   @use "../../icon-settings-expand" as *;
-
+  .options.rise-options {
+    background:#20252e; border:1px solid #ffffff12; border-radius:10px;
+    padding:6px; box-shadow:0 12px 32px #0006;
+    &::-webkit-scrollbar {width:6px;}
+    &::-webkit-scrollbar-thumb {background:#626b7b66; border-radius:20px;}
+    .option {font-family:Inter,sans-serif; text-align:left; padding:10px 12px; border-radius:6px; color:#bbc2ce;}
+    .option:hover {background:#ffffff09; color:#fff;}
+    .option.active {background:color-mix(in srgb,var(--accent-color) 14%,transparent); color:var(--accent-color);}
+  }
   .dropdown {
     position: relative;
 

@@ -9,6 +9,47 @@
     import HudEditor from "../tabs/hud_editor/HudEditor.svelte";
     import RiseModuleDetails from "./RiseModuleDetails.svelte";
     import {searchModules} from "./rise_search";
+    import {setItem} from "../../../integration/persistent_storage";
+    import "./rise-controls.scss";
+    let stage: HTMLDivElement;
+    let windowElement: HTMLElement;
+    let x = 0, y = 0;
+    let drag: {x: number; y: number; left: number; top: number} | undefined;
+    function clampPosition() {
+        if (!stage || !windowElement) return;
+        const maxX = Math.max(0, (stage.clientWidth - windowElement.offsetWidth) / 2 - 12);
+        const maxY = Math.max(0, (stage.clientHeight - windowElement.offsetHeight) / 2 - 12);
+        x = Math.max(-maxX, Math.min(maxX, x));
+        y = Math.max(-maxY, Math.min(maxY, y));
+    }
+    function startDrag(event: PointerEvent) {
+        if (event.button !== 0) return;
+        drag = {x: event.clientX, y: event.clientY, left: x, top: y};
+        (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+    }
+    function moveDrag(event: PointerEvent) {
+        if (!drag) return;
+        const scale = stage.getBoundingClientRect().width / stage.clientWidth;
+        x = drag.left + (event.clientX - drag.x) / scale;
+        y = drag.top + (event.clientY - drag.y) / scale;
+        clampPosition();
+    }
+    function endDrag() {
+        if (!drag) return;
+        drag = undefined;
+        void setItem("rise-window-position", JSON.stringify({x, y}));
+    }
+    onMount(() => {
+        try {
+            const saved = JSON.parse(localStorage.getItem("rise-window-position") || "{}");
+            x = Number.isFinite(saved.x) ? saved.x : 0;
+            y = Number.isFinite(saved.y) ? saved.y : 0;
+        } catch { /* Ignore outdated stored positions. */ }
+        const observer = new ResizeObserver(clampPosition);
+        if (stage) observer.observe(stage);
+        clampPosition();
+        return () => observer.disconnect();
+    });
 
     let modules: Module[] = [];
     let category = "";
@@ -51,8 +92,11 @@
     <button class="return" on:click={() => hud = false}>← Back to ClickGUI</button>
 {:else}
 <ScaledClickGuiContent>
-    <div class="stage">
-        <section class="rise" aria-label="LiquidBounce ClickGUI">
+    <div class="stage" bind:this={stage}>
+        <section class="rise" bind:this={windowElement} style:transform={`translate(${x}px, ${y}px)`} aria-label="LiquidBounce ClickGUI">
+            <button class="drag-handle" aria-label="Drag window; double-click to centre" title="Drag to move · Double-click to centre"
+                on:pointerdown={startDrag} on:pointermove={moveDrag} on:pointerup={endDrag} on:pointercancel={endDrag}
+                on:dblclick={() => {x = 0; y = 0; void setItem("rise-window-position", JSON.stringify({x, y}));}}><span></span></button>
             <aside>
                 <div class="brand">LB<span>LiquidBounce</span></div>
                 <input aria-label="Search modules" placeholder="Search modules…" bind:value={query}
@@ -108,6 +152,10 @@
 {/if}
 
 <style lang="scss">
+    .rise {position:relative;}
+    .drag-handle {position:absolute; top:0; left:0; width:100%; height:24px; cursor:grab; touch-action:none; display:grid; place-items:center; z-index:2;}
+    .drag-handle:active {cursor:grabbing;}
+    .drag-handle span {width:36px; height:3px; border-radius:3px; background:#ffffff20;}
     .stage {position:absolute; inset:0; display:grid; place-items:center; padding:24px;}
     .rise {width:min(1180px,100%); height:min(780px,100%); display:grid; grid-template-columns:230px minmax(0,1fr); background:#15181ef5; color:#ededf0; border:1px solid #ffffff0e; border-radius:28px; box-shadow:0 22px 80px #05070db3; overflow:hidden;
         --clickgui-button-background-color:#252932; --clickgui-dropdown-trigger-background-color:#252932;

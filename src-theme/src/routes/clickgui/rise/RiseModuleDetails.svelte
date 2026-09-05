@@ -2,7 +2,7 @@
     import {onMount} from "svelte";
     import type {Module, ConfigurableSetting} from "../../../integration/types";
     import {getModuleSettings, setModuleSettings} from "../../../integration/rest";
-    import GenericSetting from "../setting/common/GenericSetting.svelte";
+    import RiseSettingsPage from "./RiseSettingsPage.svelte";
     export let module: Module;
     let configurable: ConfigurableSetting | undefined;
     let error = "";
@@ -28,17 +28,12 @@
 {#if error}<p role="alert">{error} <button on:click={load}>Retry</button></p>{/if}
 {#if configurable}
     <fieldset disabled={saving}>
-        {#each configurable.value as setting (setting.name)}
-            {#if setting.name !== "Enabled"}
-                <div class="setting-row"><GenericSetting path={`clickgui.${module.name}`} bind:setting on:change={save}/></div>
-            {/if}
-        {/each}
+        <RiseSettingsPage settings={configurable.value} title={module.name} path={`clickgui.${module.name}`} hideRootEnabled on:change={save}/>
     </fieldset>
 {:else if !error}<p>Loading settings…</p>{/if}
 
 <style>
-    fieldset {border:0; min-width:0; padding:0;}
-    .setting-row {padding:12px 0; border-bottom:1px solid #ffffff0d;}
+    fieldset {border:1px solid #ffffff08; border-radius:18px; background:#10131866; min-width:0; width:100%; max-width:660px; padding:8px 22px; margin:0 auto;}
     p {color:var(--clickgui-text-dimmed-color); padding:20px 0;}
     button {cursor:pointer;}
 </style>
