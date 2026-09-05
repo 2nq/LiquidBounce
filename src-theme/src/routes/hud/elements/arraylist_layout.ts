@@ -3,12 +3,40 @@ export function resolveArrayListScale(value: unknown): number {
     return Number.isFinite(scale) ? Math.max(0.5, Math.min(2, scale)) : 1;
 }
 
-/**
- * Avoids creating a persistent compositing context when the ArrayList is rendered
- * at its native size. Chromium can otherwise keep text on a scaled transparent
- * layer, which softens glyphs when the HUD browser is composited over the game.
- */
-export function resolveArrayListZoom(value: unknown): number | undefined {
+export interface ArrayListGeometry {
+    scale: number;
+    fontSize: number;
+    lineHeight: number;
+    paddingX: number;
+    paddingY: number;
+    borderWidth: number;
+    radius: number;
+    shadowY: number;
+    shadowBlur: number;
+    softGlow: number;
+    strongGlow: number;
+    entryOffset: number;
+    fontDeclaration: string;
+}
+
+export function resolveArrayListGeometry(value: unknown): ArrayListGeometry {
     const scale = resolveArrayListScale(value);
-    return scale === 1 ? undefined : scale;
+    const scaled = (pixels: number) => pixels * scale;
+    const fontSize = scaled(14);
+
+    return {
+        scale,
+        fontSize,
+        lineHeight: scaled(17),
+        paddingX: scaled(8),
+        paddingY: scaled(5),
+        borderWidth: scaled(3),
+        radius: scaled(5),
+        shadowY: scaled(3),
+        shadowBlur: scaled(8),
+        softGlow: scaled(4),
+        strongGlow: scaled(8),
+        entryOffset: scaled(16),
+        fontDeclaration: `500 ${fontSize}px Inter`,
+    };
 }
