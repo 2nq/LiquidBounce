@@ -16,9 +16,9 @@
     import {onMount} from "svelte";
     import {notification} from "../common/header/notification_store";
     import {isAnniversary} from "../../../util/utils";
+    import {nextTitleMenuState, type TitleMenuState} from "./title_menu_state";
 
-    let regularButtonsShown = true;
-    let clientButtonsShown = false;
+    let menuState: TitleMenuState = "regular";
 
     onMount(() => {
         setTimeout(async () => {
@@ -36,17 +36,7 @@
     });
 
     function toggleButtons() {
-        if (clientButtonsShown) {
-            clientButtonsShown = false;
-            setTimeout(() => {
-                regularButtonsShown = true;
-            }, 750);
-        } else {
-            regularButtonsShown = false;
-            setTimeout(() => {
-                clientButtonsShown = true;
-            }, 750);
-        }
+        menuState = nextTitleMenuState(menuState, menuState === "regular" ? "open-client" : "back");
     }
 </script>
 
@@ -57,7 +47,9 @@
 
     <div class="content">
         <div class="main-buttons">
-            {#if regularButtonsShown}
+            {#key menuState}
+            <div class="button-set" in:fly|global={{duration: 160, y: 8}}>
+            {#if menuState === "regular"}
                 <MainButton title="Singleplayer" icon="singleplayer" index={0}
                             on:click={() => openScreen("singleplayer")}/>
 
@@ -68,13 +60,15 @@
                 </MainButton>
                 <MainButton title="LiquidBounce" icon="liquidbounce" on:click={toggleButtons} index={2}/>
                 <MainButton title="Options" icon="options" on:click={() => openScreen("options")} index={3}/>
-            {:else if clientButtonsShown}
+            {:else}
                 <MainButton title="Proxy Manager" icon="proxymanager" on:click={() => openScreen("proxymanager")}
                             index={0}/>
                 <MainButton title="Click GUI" icon="clickgui" on:click={() => openScreen("clickgui")} index={1}/>
                 <!-- <MainButton title="Scripts" icon="scripts" index={2}/> -->
                 <MainButton title="Back" icon="back-large" on:click={toggleButtons} index={2}/>
             {/if}
+            </div>
+            {/key}
         </div>
 
         <div class="additional-buttons" transition:fly|global={{duration: 700, y: 100}}>
@@ -124,6 +118,8 @@
         row-gap: 25px;
         grid-area: a;
     }
+
+    .button-set {display:flex; flex-direction:column; row-gap:25px;}
 
     .additional-buttons {
         grid-area: b;
