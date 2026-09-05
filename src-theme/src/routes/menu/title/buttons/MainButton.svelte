@@ -1,78 +1,60 @@
 <script lang="ts">
-    import {fly} from "svelte/transition";
     import {createEventDispatcher} from "svelte";
-    import {backIn, backOut} from "svelte/easing";
     import TitleButtonIcon from "./TitleButtonIcon.svelte";
 
     export let title: string;
     export let icon: string;
-    export let index: number;
-
-    let hovered = false;
-
     const dispatch = createEventDispatcher();
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="main-button" on:mouseenter={() => hovered = true} on:mouseleave={() => hovered = false} on:click={() => hovered = false}
-     on:click={() => dispatch("click")} out:fly|global={{duration: 400, x: -500, delay: index * 100, easing: backIn}}
-     in:fly|global={{duration: 400, x: -500, delay: index * 100, easing: backOut}}>
-    <div class="icon">
-        <TitleButtonIcon {icon} />
-    </div>
-
-    <div class="title">{title}</div>
-
-    <div class="wrapped-content">
-        <slot parentHovered={hovered}/>
-    </div>
+<div class="main-button">
+    <button type="button" class="primary-action" on:click={() => dispatch("click")}>
+        <span class="icon"><TitleButtonIcon {icon}/></span>
+        <span class="title">{title}</span>
+        <span class="arrow" aria-hidden="true">›</span>
+    </button>
+    {#if $$slots.default}<div class="wrapped-content"><slot/></div>{/if}
 </div>
 
 <style lang="scss">
 
-  .main-button {
-    background-color: var(--menu-main-button-background-color);
-    width: 590px;
-    padding: 25px 35px;
+  .main-button {position:relative; width:100%;}
+  .primary-action {
+    width:100%; min-height:64px; padding:9px 12px;
     display: grid;
-    grid-template-columns: max-content 1fr max-content;
+    grid-template-columns: 44px 1fr max-content;
     align-items: center;
     cursor: pointer;
-    border-radius: 5px;
-    column-gap: 25px;
-
-    background: linear-gradient(to left, var(--menu-main-button-background-color) 50%, var(--menu-main-button-accent-color) 50%);
-    background-size: 200% 100%;
-    background-position: right bottom;
-    will-change: background-position;
-    transition: background-position .2s ease-out;
+    border-radius: 12px; column-gap:12px; text-align:left;
+    color:var(--menu-main-button-text-color); background:var(--menu-title-action-background-color);
+    border:1px solid var(--menu-title-border-color); border-top-color:var(--menu-title-highlight-color);
+    box-shadow:0 5px 14px var(--menu-title-action-shadow-color),inset 0 1px 0 color-mix(in srgb,white 4%,transparent);
+    transition:transform 150ms ease,background-color 150ms ease,border-color 150ms ease,box-shadow 150ms ease;
 
     &:hover {
-      background-position: left bottom;
-
-      .icon {
-        background-color: var(--menu-main-button-icon-hover-background-color);
-        color: var(--menu-main-button-icon-hover-foreground-color);
-      }
+      transform:translateY(-2px); background:var(--menu-title-action-hover-background-color);
+      border-color:color-mix(in srgb,var(--accent-color) 45%,var(--menu-title-border-color));
+      box-shadow:0 8px 20px var(--menu-title-action-shadow-color),0 0 18px color-mix(in srgb,var(--accent-color) 9%,transparent),inset 0 1px 0 color-mix(in srgb,white 7%,transparent);
+      .icon,.arrow {color:var(--accent-color);}
     }
+    &:active {transform:translateY(0) scale(.992);}
+    &:focus-visible {outline:2px solid var(--accent-color); outline-offset:2px;}
   }
 
   .icon {
-    background-color: var(--menu-main-button-icon-background-color);
-    color: var(--menu-main-button-icon-foreground-color);
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    transition: ease background-color 0.2s, ease color 0.2s;
+    color:var(--menu-text-dimmed-color); width:44px; height:44px; border-radius:10px;
+    background:var(--menu-title-icon-background-color); border:1px solid color-mix(in srgb,white 5%,transparent);
+    transition:color 150ms ease,background-color 150ms ease;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
   .title {
-    font-size: 26px;
-    color: var(--menu-main-button-text-color);
-    font-weight: 600;
+    font-size: 16px; color:inherit; font-weight: 550; letter-spacing:-.1px;
   }
+  .arrow {font-size:24px; color:#6f7887; padding:0 6px; transition:color 150ms ease,transform 150ms ease;}
+  .primary-action:hover .arrow {transform:translateX(2px);}
+  .wrapped-content {position:absolute; right:45px; top:50%; transform:translateY(-50%); z-index:2;}
+  @media(prefers-reduced-motion:reduce){.primary-action,.icon,.arrow{transition-duration:1ms!important}.primary-action:hover{transform:none}}
 </style>

@@ -106,7 +106,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="account" class:expanded bind:this={accountElement} on:click={handleSelectClick}>
+<div class="account" class:expanded class:title={inTitle} bind:this={accountElement} on:click={handleSelectClick}>
     <div class="header" bind:this={headerElement}>
         {#if $isLoggingIn}
             <div class="avatar-wrapper" transition:fade={{ duration: 200 }}>
@@ -185,6 +185,31 @@
         border-radius: 5px 5px 0 0;
       }
     }
+  }
+
+  .account.title {
+    width:300px;
+    > .header {
+      padding:8px 10px; border-radius:11px; column-gap:10px;
+      background:var(--menu-title-elevated-background-color);
+      border:1px solid var(--menu-title-border-color); border-top-color:var(--menu-title-highlight-color);
+      box-shadow:0 8px 24px var(--menu-title-action-shadow-color),inset 0 1px 0 color-mix(in srgb,white 4%,transparent);
+      transition:border-radius 150ms ease,background-color 150ms ease;
+      .avatar-wrapper .avatar {width:38px;height:38px;border-radius:9px;}
+      .avatar-wrapper .party-hat {height:72px;top:-40px;left:-20px;}
+      .username {font-size:12px;}
+      .account-type {font-size:10px;}
+      .buttons {column-gap:7px;}
+      .icon-button {padding:4px;border-radius:6px;}
+      .icon {width:16px;height:16px;opacity:.75;}
+    }
+    &.expanded > .header {border-radius:11px 11px 0 0;}
+    .quick-switcher {right:0;width:330px;border-radius:0 0 11px 11px;border:1px solid var(--menu-title-border-color);border-top:0;box-shadow:0 14px 30px #0007;overflow:hidden;}
+    .quick-switcher .account-search {font-size:12px;padding:11px 12px 11px 36px;background-position:13px center;background-size:14px;border-bottom-width:2px;}
+    .quick-switcher .placeholder {font-size:12px;padding:12px;}
+    .quick-switcher .account-list {max-height:250px;}
+    .quick-switcher .account-item {font-size:11px;padding:10px 12px;column-gap:10px;}
+    .quick-switcher .account-item .username {font-size:12px;}
   }
 
   .header {
