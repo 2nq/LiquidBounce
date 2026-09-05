@@ -33,7 +33,7 @@
 {:else if !error}<p>Loading settings…</p>{/if}
 
 <style>
-    fieldset {border:1px solid #ffffff08; border-radius:18px; background:#10131866; min-width:0; width:100%; max-width:660px; padding:8px 22px; margin:0 auto;}
+    fieldset {border:1px solid #ffffff06; border-top-color:#ffffff13; border-left-color:#ffffff10; border-radius:18px; background:#101319; box-shadow:0 8px 24px #0003,inset 0 1px 0 #ffffff03; min-width:0; width:100%; max-width:660px; padding:8px 22px; margin:0 auto;}
     p {color:var(--clickgui-text-dimmed-color); padding:20px 0;}
     button {cursor:pointer;}
 </style>

@@ -161,17 +161,20 @@
         --clickgui-button-background-color:#252932; --clickgui-dropdown-trigger-background-color:#252932;
         --clickgui-module-settings-background-color:transparent; --clickgui-setting-group-border-color:#ffffff16;
     }
-    aside {padding:30px 20px 22px; background:#101318c9; display:flex; flex-direction:column; min-height:0; border-right:1px solid #ffffff09;}
+    .rise {border-top-color:#ffffff18; border-left-color:#ffffff14; box-shadow:0 28px 80px #05070d99,0 6px 18px #0005,inset 0 1px 0 #ffffff05;}
+    aside {padding:24px 14px 16px; margin:6px; background:#101318; display:flex; flex-direction:column; min-height:0; border:1px solid #ffffff07; border-top-color:#ffffff13; border-left-color:#ffffff10; border-radius:23px; box-shadow:8px 0 24px #0003,inset 0 1px 0 #ffffff04;}
     .brand {font-size:40px; font-weight:600; letter-spacing:-3px; margin:0 10px 28px; display:flex; align-items:center; gap:14px;}
     .brand span {font-size:12px; letter-spacing:0; color:#989da7;}
     input {width:100%; padding:13px; background:#242830; border:1px solid transparent; border-radius:12px; color:inherit; font:inherit; font-size:13px; margin-bottom:20px;}
     input:focus {border-color:var(--accent-color);}
+    input {box-shadow:inset 0 1px 3px #0004,0 1px 0 #ffffff04;}
     nav {overflow:auto; min-height:0; flex:1;}
     button {font:inherit; border:0; color:inherit; cursor:pointer; background:transparent; transition:background 180ms,color 180ms;}
     button:focus-visible {outline:2px solid var(--accent-color); outline-offset:-2px;}
     button:disabled {opacity:.5; cursor:wait;}
     nav button,.utilities button {display:flex; align-items:center; gap:14px; padding:13px 12px; width:100%; text-align:left; color:#a3a6ad; border-radius:12px; margin:3px 0; font-size:15px;}
     button:hover,nav button.active,.utilities button.active {background:#ffffff07; color:#fff;}
+    nav button.active,.utilities button.active {background:#22262e; box-shadow:inset 0 1px 0 #ffffff0c,inset 1px 0 0 #ffffff05,0 3px 8px #0003;}
     .category-icon {width:23px; font-size:13px; color:var(--accent-color); font-weight:600;}
     .category-icon img {width:20px; height:20px; object-fit:contain; opacity:.75;}
     .utilities {padding-top:14px; border-top:1px solid #ffffff0a;}
@@ -183,6 +186,8 @@
     header p {color:#8a909b; font-size:13px; margin-top:8px; line-height:1.6;}
     .content {overflow:auto; min-height:0; padding:0 8px 30px 0; flex:1;}
     .module-row {display:flex; border-bottom:1px solid #ffffff08; border-radius:10px; margin:3px 0; background:#10131866;}
+    .module-row {box-shadow:inset 0 1px 0 #ffffff05; transition:background 160ms,box-shadow 160ms;}
+    .module-row:hover {background:#191e26; box-shadow:inset 0 1px 0 #ffffff0a,0 3px 8px #0002;}
     .module-toggle {display:flex; flex:1; min-width:0; align-items:center; gap:20px; padding:18px 20px; text-align:left; border-radius:10px;}
     .module-copy {display:flex; flex:1; min-width:0; flex-direction:column; gap:6px;}
     strong {font-size:16px; font-weight:500;}
@@ -194,6 +199,7 @@
     .back {font-size:24px; width:38px; height:38px; border-radius:10px;}
     .state {font-size:12px; padding:10px 14px; border-radius:9px; background:#252932;}
     .state.enabled {color:var(--accent-color);}
+    .state {box-shadow:inset 0 1px 0 #ffffff0b,0 3px 8px #0003;}
     .empty {padding:30px 10px; color:#8a909b;}
     .return {position:fixed; top:15px; left:50%; transform:translateX(-50%); z-index:100; padding:12px 20px; border-radius:10px; background:#15181e; color:white;}
     @media(max-width:750px) {.rise {grid-template-columns:175px minmax(0,1fr);} aside {padding:20px 10px;} main {padding:24px 18px 0;} .brand span {display:none;}}

@@ -71,7 +71,8 @@
     .setting-row {padding:12px 0; border-bottom:1px solid #ffffff0b;}
     .setting-row:last-child {border-bottom:0;}
     .group-link {width:100%; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 12px; text-align:left; background:#ffffff03; font-size:14px;}
-    .group-link:hover {background:#ffffff08; color:#fff;}
+    .group-link {box-shadow:inset 0 1px 0 #ffffff07,0 2px 4px #0002; transition:background 160ms,box-shadow 160ms;}
+    .group-link:hover {background:#ffffff08; color:#fff; box-shadow:inset 0 1px 0 #ffffff0d,0 3px 8px #0003;}
     .group-summary {display:flex; align-items:center; gap:16px; color:#818b9b; font-size:12px; white-space:nowrap;}
     .arrow {font-size:22px;}
     p {padding:20px 0; color:#818b9b;}
