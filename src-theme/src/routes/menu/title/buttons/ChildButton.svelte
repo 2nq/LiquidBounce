@@ -12,7 +12,7 @@
     <ToolTip color="var(--menu-base-color)" text="Join Realms server" />
 
     <div class="icon">
-        <TitleButtonIcon {icon} />
+        <TitleButtonIcon {icon} size={16} />
     </div>
 
     <div class="title">{title}</div>
