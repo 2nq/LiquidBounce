@@ -1,6 +1,7 @@
 <script lang="ts">
     import {createEventDispatcher, tick} from "svelte";
     import {convertToSpacedString, spaceSeperatedNames} from "../../../../theme/theme_config";
+    import {resolveDropdownGeometry} from "./dropdown_geometry";
 
     export let name: string | null;
     export let options: string[];
@@ -10,7 +11,9 @@
 
     let expanded = false;
     let dropdownHead: HTMLElement;
+    let optionsElement: HTMLElement | undefined;
     let optionsStyle = "";
+    let rise = false;
 
     function portal(node: HTMLElement) {
         document.body.appendChild(node);
@@ -21,18 +24,28 @@
     }
 
     function windowClickHide(e: MouseEvent) {
-        if (!dropdownHead.contains(e.target as Node)) {
+        const target = e.target as Node;
+        if (!dropdownHead.contains(target) && !optionsElement?.contains(target)) {
             expanded = false;
         }
+    }
+
+    function windowScrollHide(e: Event) {
+        if (optionsElement?.contains(e.target as Node)) {
+            return;
+        }
+
+        expanded = false;
     }
 
     function updateValue(v: string) {
         value = v;
         expanded = false;
-        dispatch("change");
+        dispatch("change", v);
     }
 
     async function toggleExpanded() {
+        rise = !!dropdownHead.closest(".rise");
         expanded = !expanded;
         if (!expanded) {
             return;
@@ -49,23 +62,26 @@
 
         const bounds = dropdownHead.getBoundingClientRect();
         const scale = bounds.width / dropdownHead.offsetWidth;
+        const geometry = resolveDropdownGeometry(bounds.top, bounds.bottom, window.innerHeight, scale);
+        const verticalPosition = geometry.openAbove
+            ? `bottom: ${window.innerHeight - bounds.top}px`
+            : `top: ${bounds.bottom}px`;
         optionsStyle = [
             `left: ${bounds.left}px`,
-            `top: ${bounds.bottom}px`,
+            verticalPosition,
             `width: ${dropdownHead.offsetWidth}px`,
-            `--dropdown-scale: ${scale}`
+            `--dropdown-scale: ${scale}`,
+            `--dropdown-max-height: ${geometry.maxHeight}px`,
+            `--dropdown-transform-origin: ${geometry.openAbove ? "bottom left" : "top left"}`,
         ].join(";");
     }
 
-    function closeDropdown() {
-        expanded = false;
-    }
 </script>
 
 <svelte:window
         on:click={windowClickHide}
         on:resize={updateOptionsPosition}
-        on:scroll|capture={closeDropdown}
+        on:scroll|capture={windowScrollHide}
 />
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -80,7 +96,7 @@
     </div>
 
     {#if expanded}
-        <div class="options" style={optionsStyle} use:portal>
+        <div class="options" class:rise-options={rise} style={optionsStyle} bind:this={optionsElement} use:portal>
             {#each options as o (o)}
                 <div
                         class="option"
@@ -96,7 +112,15 @@
 
 <style lang="scss">
   @use "../../icon-settings-expand" as *;
-
+  .options.rise-options {
+    background:#20252e; border:1px solid #ffffff12; border-radius:10px;
+    padding:6px; box-shadow:0 12px 32px #0006;
+    &::-webkit-scrollbar {width:6px;}
+    &::-webkit-scrollbar-thumb {background:#626b7b66; border-radius:20px;}
+    .option {font-family:Inter,sans-serif; text-align:left; padding:10px 12px; border-radius:6px; color:#bbc2ce;}
+    .option:hover {background:#ffffff09; color:#fff;}
+    .option.active {background:color-mix(in srgb,var(--accent-color) 14%,transparent); color:var(--accent-color);}
+  }
   .dropdown {
     position: relative;
 
@@ -149,7 +173,11 @@
     position: fixed;
     box-sizing: border-box;
     transform: scale(var(--dropdown-scale));
-    transform-origin: top left;
+    transform-origin: var(--dropdown-transform-origin, top left);
+    max-height: var(--dropdown-max-height, 420px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
 
     .option {
       color: var(--clickgui-dropdown-option-color);

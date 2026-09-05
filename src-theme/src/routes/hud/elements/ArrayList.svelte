@@ -6,14 +6,17 @@
     import {getTextWidth} from "../../../integration/text_measurement";
     import {flip} from "svelte/animate";
     import {fly} from "svelte/transition";
+    import {quintOut} from "svelte/easing";
     import {convertToSpacedString, spaceSeperatedNames} from "../../../theme/theme_config";
     import {resolveArrayListColor, type ArrayListThemeName} from "./arraylist_themes";
+    import {resolveArrayListScale} from "./arraylist_layout";
 
     export let settings: { [name: string]: any };
 
     interface ArrayListSettings {
         showTags: boolean;
         lowercase: boolean;
+        scale: number;
         itemAlignment: "Left" | "Right";
         order: "Ascending" | "Descending";
         theme: string;
@@ -31,6 +34,7 @@
     const DEFAULTS: ArrayListSettings = {
         showTags: true,
         lowercase: false,
+        scale: 1,
         itemAlignment: "Right",
         order: "Descending",
         theme: "Blend",
@@ -78,6 +82,7 @@
     let colorTime = Date.now();
     let animationDuration = DEFAULTS.animationSpeed;
     let enabledModules: RenderModule[] = [];
+    let itemColors: string[] = [];
 
     async function updateEnabledModules() {
         const modules = await getModules();
@@ -103,6 +108,17 @@
     }
 
     $: animationDuration = boundedAnimationSpeed(cSettings.animationSpeed);
+    $: itemColors = enabledModules.map((_, index) => rgb(resolveArrayListColor(
+            cSettings.theme as ArrayListThemeName,
+            index,
+            enabledModules.length,
+            colorTime,
+            GLOBAL_PRIMARY,
+            GLOBAL_SECONDARY,
+            cSettings.customPrimary,
+            cSettings.customSecondary,
+        )));
+
     $: {
         const nextSignature = JSON.stringify(settings);
         if (nextSignature !== settingsSignature || settings !== previousSettings) {
@@ -119,26 +135,27 @@
 
     onMount(() => {
         void updateEnabledModules();
-        const timer = window.setInterval(() => colorTime = Date.now(), 100);
-        return () => window.clearInterval(timer);
+        let frame = 0;
+        const animateColors = (now: number) => {
+            colorTime = now;
+            frame = window.requestAnimationFrame(animateColors);
+        };
+
+        frame = window.requestAnimationFrame(animateColors);
+        return () => window.cancelAnimationFrame(frame);
     });
 
     listen("moduleToggle", async () => await updateEnabledModules());
     listen("refreshArrayList", async () => await updateEnabledModules());
 </script>
 
-<div class="arraylist" class:align-left={cSettings.itemAlignment === "Left"} class:align-right={cSettings.itemAlignment === "Right"}>
+<div
+        class="arraylist"
+        class:align-left={cSettings.itemAlignment === "Left"}
+        class:align-right={cSettings.itemAlignment === "Right"}
+        style:zoom={resolveArrayListScale(cSettings.scale)}
+>
     {#each enabledModules as module, index (module.name)}
-        {@const itemColor = resolveArrayListColor(
-            cSettings.theme as ArrayListThemeName,
-            index,
-            enabledModules.length,
-            colorTime,
-            GLOBAL_PRIMARY,
-            GLOBAL_SECONDARY,
-            cSettings.customPrimary,
-            cSettings.customSecondary,
-        )}
         <div
                 class="module"
                 class:background-off={cSettings.background === "Off"}
@@ -150,11 +167,15 @@
                 class:border-none={cSettings.border === "None"}
                 class:border-accent={cSettings.border === "Accent"}
                 class:border-item={cSettings.border === "Item"}
-                style={`--arraylist-item-color: ${rgb(itemColor)}; --arraylist-glow-color: ${rgb(itemColor)}; --arraylist-alpha: ${backgroundAlpha()}%;`}
-                animate:flip={{duration: animationDuration}}
-                transition:fly={{x: cSettings.itemAlignment === "Right" ? 50 : -50, duration: animationDuration}}
+                style={`--arraylist-item-color: ${itemColors[index] ?? rgb(GLOBAL_PRIMARY)}; --arraylist-alpha: ${backgroundAlpha()}%; --arraylist-content-width: ${module.width}px; --arraylist-animation-duration: ${animationDuration}ms;`}
+                animate:flip={{duration: animationDuration, easing: quintOut}}
+                transition:fly={{
+                    x: cSettings.itemAlignment === "Right" ? 16 : -16,
+                    duration: animationDuration,
+                    easing: quintOut,
+                }}
         >
-            {module.displayName}
+            <span class="module-name">{module.displayName}</span>
             {#if module.displayTag && cSettings.showTags}
                 <span class="tag"> {module.displayTag}</span>
             {/if}
@@ -166,12 +187,12 @@
   .arraylist {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 0;
     width: 100%;
 
     &.align-left .module {
       margin-right: auto;
-      border-radius: 0 4px 4px 0;
+      border-radius: 0;
       border-left: none;
 
       &.border-accent,
@@ -186,19 +207,50 @@
 
     &.align-right .module {
       margin-left: auto;
+      border-radius: 0;
+    }
+
+    &.align-left .module:first-child {
+      border-radius: 0 4px 0 0;
+    }
+
+    &.align-left .module:last-child {
+      border-radius: 0 0 4px 0;
+    }
+
+    &.align-left .module:only-child {
+      border-radius: 0 4px 4px 0;
+    }
+
+    &.align-right .module:first-child {
+      border-radius: 4px 0 0 0;
+    }
+
+    &.align-right .module:last-child {
+      border-radius: 0 0 0 4px;
+    }
+
+    &.align-right .module:only-child {
+      border-radius: 4px 0 0 4px;
     }
   }
 
   .module {
+    box-sizing: content-box;
     background-color: color-mix(in srgb, var(--arraylist-base-color) var(--arraylist-alpha), transparent);
-    color: var(--arraylist-item-color);
+    color: var(--arraylist-tag-color);
     font-size: 14px;
-    border-radius: 4px 0 0 4px;
+    border-radius: 0;
     padding: 5px 8px;
     border-left: solid 3px var(--arraylist-border-color);
-    width: max-content;
+    width: var(--arraylist-content-width);
     font-weight: 500;
-    transition: color 160ms ease, background-color 160ms ease, filter 160ms ease;
+    white-space: nowrap;
+    overflow: hidden;
+    will-change: transform, opacity, width;
+    transition: width var(--arraylist-animation-duration) cubic-bezier(0.22, 1, 0.36, 1),
+                background-color 160ms ease,
+                box-shadow 160ms ease;
 
     &.background-off {
       background-color: transparent;
@@ -212,20 +264,25 @@
       border-left-color: var(--arraylist-item-color);
     }
 
-    &.glow-soft {
-      filter: drop-shadow(0 0 4px var(--arraylist-glow-color));
-    }
-
-    &.glow-strong {
-      filter: drop-shadow(0 0 8px var(--arraylist-glow-color));
-    }
-
     &.shadow {
       box-shadow: 0 3px 8px var(--arraylist-shadow-color);
     }
   }
 
+  .module-name {
+    color: var(--arraylist-item-color);
+    transition: text-shadow 160ms ease;
+  }
+
+  .module.glow-soft .module-name {
+    text-shadow: 0 0 4px var(--arraylist-glow-color);
+  }
+
+  .module.glow-strong .module-name {
+    text-shadow: 0 0 8px var(--arraylist-glow-color);
+  }
+
   .tag {
-    color: color-mix(in srgb, var(--arraylist-item-color) 55%, var(--arraylist-tag-color));
+    color: var(--arraylist-tag-color);
   }
 </style>

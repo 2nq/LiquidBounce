@@ -21,6 +21,7 @@ package net.ccbluex.liquidbounce.features.module.modules.render
 import com.mojang.blaze3d.platform.InputConstants
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.config.types.group.ToggleableValueGroup
+import net.ccbluex.liquidbounce.config.types.list.Tagged
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.event.events.BrowserReadyEvent
 import net.ccbluex.liquidbounce.event.events.ClickGuiScaleChangeEvent
@@ -52,6 +53,16 @@ object ModuleClickGui :
     ClientModule("ClickGUI", ModuleCategories.RENDER, bind = InputConstants.KEY_RSHIFT, disableActivation = true) {
 
     override val running get() = true
+
+    @Suppress("UnusedPrivateProperty")
+    private val layout by enumChoice("Layout", Layout.RISE).onChanged {
+        EventManager.callEvent(ClickGuiValueChangeEvent(this))
+    }
+
+    private enum class Layout(override val tag: String) : Tagged {
+        RISE("Rise"),
+        PANELS("Panels")
+    }
 
     @Suppress("UnusedPrivateProperty")
     private val scale by float("Scale", 1f, 0.5f..2f).onChanged {

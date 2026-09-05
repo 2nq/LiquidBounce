@@ -60,6 +60,13 @@ function clamp(value: number, min = 0, max = 1): number {
     return Math.max(min, Math.min(max, value));
 }
 
+const RISE_ROW_SPACING = 12;
+
+export function riseBlendFactor(index: number, now: number): number {
+    const y = index * RISE_ROW_SPACING;
+    return Math.sin(now / 600 + y * 0.06) * 0.5 + 0.5;
+}
+
 export function interpolateColor(a: number, b: number, factor: number): number {
     const t = clamp(factor);
     const ar = (a >> 16) & 0xff;
@@ -107,7 +114,7 @@ export function resolveArrayListColor(
             ? [customPrimary, customSecondary]
             : (ARRAYLIST_THEMES.find(entry => entry.name === theme)?.colors ?? [globalPrimary, globalSecondary]);
 
-    const factor = count <= 1 ? 0 : clamp(index / (count - 1));
+    const factor = riseBlendFactor(index, now);
     const [first, second, third] = selected;
     if (third === undefined || factor <= 0.5) {
         return interpolateColor(first, second, third === undefined ? factor : factor * 2);

@@ -27,6 +27,7 @@ interface HudToggleableConfigurable {
 interface HudArrayListSettings {
     showTags: boolean;
     lowercase: boolean;
+    scale: number;
     itemAlignment: "Left" | "Right";
     order: "Ascending" | "Descending";
     theme: string;

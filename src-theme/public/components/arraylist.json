@@ -9,6 +9,7 @@
     "verticalAlignment": "Top",
     "verticalOffset": 0
   },
+  "tweaks": ["DISABLE_STATUS_EFFECT_OVERLAY"],
   "values": [
     {
       "type": "BOOLEAN",
@@ -19,6 +20,12 @@
       "type": "BOOLEAN",
       "name": "Lowercase",
       "value": false
+    },
+    {
+      "type": "FLOAT",
+      "name": "Scale",
+      "value": 1.0,
+      "range": {"min": 0.5, "max": 2.0}
     },
     {
       "type": "CHOOSE",
