@@ -65,3 +65,19 @@ describe("ArrayList row sizing", () => {
         expect(arrayListSource).toContain("--arraylist-padding-y");
     });
 });
+
+describe("ArrayList background shape", () => {
+    it("keeps rows seamless and rounds only the outside corners", () => {
+        expect(arrayListSource).toContain("gap: 0;");
+        expect(arrayListSource).toContain("border-radius: 0;");
+        expect(arrayListSource).toContain("border-radius: 0 var(--arraylist-radius) 0 0;");
+        expect(arrayListSource).toContain("border-radius: 0 0 var(--arraylist-radius) 0;");
+        expect(arrayListSource).toContain("border-radius: var(--arraylist-radius) 0 0 0;");
+        expect(arrayListSource).toContain("border-radius: 0 0 0 var(--arraylist-radius);");
+    });
+
+    it("does not draw interior outlines or horizontal borders", () => {
+        expect(arrayListSource).not.toMatch(/\boutline\s*:/);
+        expect(arrayListSource).not.toMatch(/border-(?:top|bottom)\s*:/);
+    });
+});

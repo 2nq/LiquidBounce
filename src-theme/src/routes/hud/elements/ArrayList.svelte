@@ -222,27 +222,27 @@
     }
 
     &.align-left .module:first-child {
-      border-radius: 0 4px 0 0;
+      border-radius: 0 var(--arraylist-radius) 0 0;
     }
 
     &.align-left .module:last-child {
-      border-radius: 0 0 4px 0;
+      border-radius: 0 0 var(--arraylist-radius) 0;
     }
 
     &.align-left .module:only-child {
-      border-radius: 0 4px 4px 0;
+      border-radius: 0 var(--arraylist-radius) var(--arraylist-radius) 0;
     }
 
     &.align-right .module:first-child {
-      border-radius: 4px 0 0 0;
+      border-radius: var(--arraylist-radius) 0 0 0;
     }
 
     &.align-right .module:last-child {
-      border-radius: 0 0 0 4px;
+      border-radius: 0 0 0 var(--arraylist-radius);
     }
 
     &.align-right .module:only-child {
-      border-radius: 4px 0 0 4px;
+      border-radius: var(--arraylist-radius) 0 0 var(--arraylist-radius);
     }
   }
 
