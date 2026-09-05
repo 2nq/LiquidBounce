@@ -8,6 +8,28 @@ export function resolveArrayListOffset(value: unknown): number {
     return Number.isFinite(offset) ? Math.round(Math.max(0, Math.min(100, offset))) : 0;
 }
 
+export interface ArrayListStepCorners {
+    top: boolean;
+    bottom: boolean;
+}
+
+export function resolveArrayListStepCorners(
+    width: number,
+    previousWidth?: number,
+    nextWidth?: number,
+): ArrayListStepCorners {
+    const isMeaningfullyWiderThan = (neighborWidth?: number) =>
+        Number.isFinite(width) &&
+        typeof neighborWidth === "number" &&
+        Number.isFinite(neighborWidth) &&
+        width - neighborWidth > 0.5;
+
+    return {
+        top: isMeaningfullyWiderThan(previousWidth),
+        bottom: isMeaningfullyWiderThan(nextWidth),
+    };
+}
+
 export interface ArrayListGeometry {
     scale: number;
     fontSize: number;
