@@ -81,8 +81,8 @@
   }
   .header.title {margin-bottom:0; min-height:54px;}
   .title-brand {display:flex; align-items:center; gap:10px; color:var(--menu-text-color);}
-  .title-brand strong {font-size:30px; line-height:1; font-weight:720; letter-spacing:-2px;}
-  .title-brand span {font-size:10px; color:var(--menu-text-dimmed-color); font-weight:600;}
+  .title-brand strong {font-size:38px; line-height:1; font-weight:720; letter-spacing:-2.5px;}
+  .title-brand span {font-size:11px; color:var(--menu-text-dimmed-color); font-weight:600;}
 
   .logo-wrapper {
     display: grid;

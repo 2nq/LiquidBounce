@@ -20,9 +20,9 @@
 
   .main-button {position:relative; width:100%;}
   .primary-action {
-    width:100%; min-height:58px; padding:8px 10px;
+    width:100%; min-height:64px; padding:9px 12px;
     display: grid;
-    grid-template-columns: 40px 1fr max-content;
+    grid-template-columns: 44px 1fr max-content;
     align-items: center;
     cursor: pointer;
     border-radius: 12px; column-gap:12px; text-align:left;
@@ -42,7 +42,7 @@
   }
 
   .icon {
-    color:var(--menu-text-dimmed-color); width:40px; height:40px; border-radius:9px;
+    color:var(--menu-text-dimmed-color); width:44px; height:44px; border-radius:10px;
     background:var(--menu-title-icon-background-color); border:1px solid color-mix(in srgb,white 5%,transparent);
     transition:color 150ms ease,background-color 150ms ease;
     display: flex;
@@ -51,7 +51,7 @@
   }
 
   .title {
-    font-size: 15px; color:inherit; font-weight: 550; letter-spacing:-.1px;
+    font-size: 16px; color:inherit; font-weight: 550; letter-spacing:-.1px;
   }
   .arrow {font-size:24px; color:#6f7887; padding:0 6px; transition:color 150ms ease,transform 150ms ease;}
   .primary-action:hover .arrow {transform:translateX(2px);}
