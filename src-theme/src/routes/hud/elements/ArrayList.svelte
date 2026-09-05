@@ -9,7 +9,7 @@
     import {quintOut} from "svelte/easing";
     import {convertToSpacedString, spaceSeperatedNames} from "../../../theme/theme_config";
     import {resolveArrayListColor, type ArrayListThemeName} from "./arraylist_themes";
-    import {resolveArrayListGeometry} from "./arraylist_layout";
+    import {resolveArrayListGeometry, resolveArrayListOffset} from "./arraylist_layout";
 
     export let settings: { [name: string]: any };
 
@@ -17,6 +17,8 @@
         showTags: boolean;
         lowercase: boolean;
         scale: number;
+        horizontalOffset: number;
+        verticalOffset: number;
         itemAlignment: "Left" | "Right";
         order: "Ascending" | "Descending";
         theme: string;
@@ -35,6 +37,8 @@
         showTags: true,
         lowercase: false,
         scale: 1,
+        horizontalOffset: 0,
+        verticalOffset: 0,
         itemAlignment: "Right",
         order: "Descending",
         theme: "Blend",
@@ -159,6 +163,8 @@
                 --arraylist-line-height: ${geometry.lineHeight}px;
                 --arraylist-padding-x: ${geometry.paddingX}px;
                 --arraylist-padding-y: ${geometry.paddingY}px;
+                --arraylist-horizontal-offset: ${resolveArrayListOffset(cSettings.horizontalOffset)}px;
+                --arraylist-vertical-offset: ${resolveArrayListOffset(cSettings.verticalOffset)}px;
                 --arraylist-border-width: ${geometry.borderWidth}px;
                 --arraylist-radius: ${geometry.radius}px;
                 --arraylist-shadow-y: ${geometry.shadowY}px;
@@ -200,9 +206,11 @@
     flex-direction: column;
     gap: 0;
     width: 100%;
+    padding-top: var(--arraylist-vertical-offset);
 
     &.align-left .module {
       margin-right: auto;
+      margin-left: var(--arraylist-horizontal-offset);
       border-radius: 0;
       border-left: none;
 
@@ -218,6 +226,7 @@
 
     &.align-right .module {
       margin-left: auto;
+      margin-right: var(--arraylist-horizontal-offset);
       border-radius: 0;
     }
 

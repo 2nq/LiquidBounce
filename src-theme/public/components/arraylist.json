@@ -28,6 +28,20 @@
       "range": {"min": 0.5, "max": 2.0}
     },
     {
+      "type": "INT",
+      "name": "HorizontalOffset",
+      "value": 0,
+      "range": {"min": 0, "max": 100},
+      "suffix": "px"
+    },
+    {
+      "type": "INT",
+      "name": "VerticalOffset",
+      "value": 0,
+      "range": {"min": 0, "max": 100},
+      "suffix": "px"
+    },
+    {
       "type": "CHOOSE",
       "name": "Theme",
       "value": "Blend",

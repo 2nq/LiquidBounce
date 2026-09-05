@@ -3,6 +3,11 @@ export function resolveArrayListScale(value: unknown): number {
     return Number.isFinite(scale) ? Math.max(0.5, Math.min(2, scale)) : 1;
 }
 
+export function resolveArrayListOffset(value: unknown): number {
+    const offset = Number(value);
+    return Number.isFinite(offset) ? Math.round(Math.max(0, Math.min(100, offset))) : 0;
+}
+
 export interface ArrayListGeometry {
     scale: number;
     fontSize: number;

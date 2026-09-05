@@ -1,6 +1,24 @@
 import {describe, expect, it} from "vitest";
 import arrayListSource from "./ArrayList.svelte?raw";
-import {resolveArrayListGeometry, resolveArrayListScale} from "./arraylist_layout";
+import {resolveArrayListGeometry, resolveArrayListOffset, resolveArrayListScale} from "./arraylist_layout";
+
+describe("ArrayList offsets", () => {
+    it.each([
+        [undefined, 0],
+        [-5, 0],
+        [12.6, 13],
+        [150, 100],
+    ])("maps %s to %s pixels", (input, expected) => {
+        expect(resolveArrayListOffset(input)).toBe(expected);
+    });
+
+    it("uses layout spacing instead of a transform", () => {
+        expect(arrayListSource).toContain("--arraylist-horizontal-offset");
+        expect(arrayListSource).toContain("--arraylist-vertical-offset");
+        expect(arrayListSource).toContain("padding-top: var(--arraylist-vertical-offset);");
+        expect(arrayListSource).not.toMatch(/transform\s*:/);
+    });
+});
 
 describe("ArrayList scale", () => {
     it.each([
