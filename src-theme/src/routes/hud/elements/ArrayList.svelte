@@ -211,7 +211,7 @@
     &.align-left .module {
       margin-right: auto;
       margin-left: var(--arraylist-horizontal-offset);
-      border-radius: 0;
+      border-radius: 0 var(--arraylist-radius) var(--arraylist-radius) 0;
       border-left: none;
 
       &.border-accent,
@@ -227,31 +227,23 @@
     &.align-right .module {
       margin-left: auto;
       margin-right: var(--arraylist-horizontal-offset);
-      border-radius: 0;
+      border-radius: var(--arraylist-radius) 0 0 var(--arraylist-radius);
     }
 
     &.align-left .module:first-child {
-      border-radius: 0 var(--arraylist-radius) 0 0;
+      border-top-left-radius: var(--arraylist-radius);
     }
 
     &.align-left .module:last-child {
-      border-radius: 0 0 var(--arraylist-radius) 0;
-    }
-
-    &.align-left .module:only-child {
-      border-radius: 0 var(--arraylist-radius) var(--arraylist-radius) 0;
+      border-bottom-left-radius: var(--arraylist-radius);
     }
 
     &.align-right .module:first-child {
-      border-radius: var(--arraylist-radius) 0 0 0;
+      border-top-right-radius: var(--arraylist-radius);
     }
 
     &.align-right .module:last-child {
-      border-radius: 0 0 0 var(--arraylist-radius);
-    }
-
-    &.align-right .module:only-child {
-      border-radius: var(--arraylist-radius) 0 0 var(--arraylist-radius);
+      border-bottom-right-radius: var(--arraylist-radius);
     }
   }
 

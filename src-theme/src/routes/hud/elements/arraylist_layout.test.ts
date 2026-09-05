@@ -85,17 +85,19 @@ describe("ArrayList row sizing", () => {
 });
 
 describe("ArrayList background shape", () => {
-    it("keeps rows seamless and rounds only the outside corners", () => {
+    it("keeps rows seamless and rounds every exposed width step", () => {
         expect(arrayListSource).toContain("gap: 0;");
-        expect(arrayListSource).toContain("border-radius: 0;");
-        expect(arrayListSource).toContain("border-radius: 0 var(--arraylist-radius) 0 0;");
-        expect(arrayListSource).toContain("border-radius: 0 0 var(--arraylist-radius) 0;");
-        expect(arrayListSource).toContain("border-radius: var(--arraylist-radius) 0 0 0;");
-        expect(arrayListSource).toContain("border-radius: 0 0 0 var(--arraylist-radius);");
+        expect(arrayListSource).toContain("border-radius: 0 var(--arraylist-radius) var(--arraylist-radius) 0;");
+        expect(arrayListSource).toContain("border-radius: var(--arraylist-radius) 0 0 var(--arraylist-radius);");
+        expect(arrayListSource).toContain("border-top-left-radius: var(--arraylist-radius);");
+        expect(arrayListSource).toContain("border-bottom-left-radius: var(--arraylist-radius);");
+        expect(arrayListSource).toContain("border-top-right-radius: var(--arraylist-radius);");
+        expect(arrayListSource).toContain("border-bottom-right-radius: var(--arraylist-radius);");
     });
 
-    it("does not draw interior outlines or horizontal borders", () => {
+    it("does not draw interior outlines, horizontal borders, gaps, or overlaps", () => {
         expect(arrayListSource).not.toMatch(/\boutline\s*:/);
         expect(arrayListSource).not.toMatch(/border-(?:top|bottom)\s*:/);
+        expect(arrayListSource).not.toMatch(/margin-(?:top|bottom)\s*:\s*-/);
     });
 });
