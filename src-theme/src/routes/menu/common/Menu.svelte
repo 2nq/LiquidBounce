@@ -1,25 +1,9 @@
 <script lang="ts">
     import Header from "./header/Header.svelte";
-    import {fly} from "svelte/transition";
-    import {onMount} from "svelte";
-
-    const transitionDuration = 700; // TODO: suboptimal
-
-    let ready = false;
-
-    onMount(() => {
-        setTimeout(() => {
-            ready = true;
-        }, transitionDuration);
-    });
 </script>
 
 <div class="menu">
-    {#if ready}
-        <div transition:fly|global={{duration: 700, y: -100}}>
-            <Header/>
-        </div>
-    {/if}
+    <div class="menu-header"><Header/></div>
 
     <div class="menu-wrapper">
         <slot/>
@@ -40,6 +24,9 @@
     flex-direction: column;
     will-change: transform;
   }
+  .menu-header {position:relative; z-index:5; animation:menu-enter 170ms ease-out both;}
+  @keyframes menu-enter {from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:reduce){.menu-header{animation-duration:1ms}}
 
   @media screen and (max-width: 1366px) {
     .menu {
