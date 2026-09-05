@@ -9,7 +9,7 @@
     import {quintOut} from "svelte/easing";
     import {convertToSpacedString, spaceSeperatedNames} from "../../../theme/theme_config";
     import {resolveArrayListColor, type ArrayListThemeName} from "./arraylist_themes";
-    import {resolveArrayListZoom} from "./arraylist_layout";
+    import {resolveArrayListGeometry} from "./arraylist_layout";
 
     export let settings: { [name: string]: any };
 
@@ -81,6 +81,7 @@
     let settingsSignature = "";
     let colorTime = Date.now();
     let animationDuration = DEFAULTS.animationSpeed;
+    let geometry = resolveArrayListGeometry(cSettings.scale);
     let enabledModules: RenderModule[] = [];
     let itemColors: string[] = [];
 
@@ -99,7 +100,7 @@
                 ? displayName
                 : `${displayName} ${displayTag}`;
 
-            return {...module, displayName, displayTag, width: getTextWidth(fullName, "500 14px Inter")};
+            return {...module, displayName, displayTag, width: getTextWidth(fullName, geometry.fontDeclaration)};
         });
 
         modulesWithWidths.sort((a, b) => cSettings.order === "Ascending" ? a.width - b.width : b.width - a.width);
@@ -108,6 +109,7 @@
     }
 
     $: animationDuration = boundedAnimationSpeed(cSettings.animationSpeed);
+    $: geometry = resolveArrayListGeometry(cSettings.scale);
     $: itemColors = enabledModules.map((_, index) => rgb(resolveArrayListColor(
             cSettings.theme as ArrayListThemeName,
             index,
@@ -153,7 +155,16 @@
         class="arraylist"
         class:align-left={cSettings.itemAlignment === "Left"}
         class:align-right={cSettings.itemAlignment === "Right"}
-        style:zoom={resolveArrayListZoom(cSettings.scale)}
+        style={`--arraylist-font-size: ${geometry.fontSize}px;
+                --arraylist-line-height: ${geometry.lineHeight}px;
+                --arraylist-padding-x: ${geometry.paddingX}px;
+                --arraylist-padding-y: ${geometry.paddingY}px;
+                --arraylist-border-width: ${geometry.borderWidth}px;
+                --arraylist-radius: ${geometry.radius}px;
+                --arraylist-shadow-y: ${geometry.shadowY}px;
+                --arraylist-shadow-blur: ${geometry.shadowBlur}px;
+                --arraylist-soft-glow: ${geometry.softGlow}px;
+                --arraylist-strong-glow: ${geometry.strongGlow}px;`}
 >
     {#each enabledModules as module, index (module.name)}
         <div
@@ -170,7 +181,7 @@
                 style={`--arraylist-item-color: ${itemColors[index] ?? rgb(GLOBAL_PRIMARY)}; --arraylist-alpha: ${backgroundAlpha()}%; --arraylist-content-width: ${module.width}px; --arraylist-animation-duration: ${animationDuration}ms;`}
                 animate:flip={{duration: animationDuration, easing: quintOut}}
                 transition:fly={{
-                    x: cSettings.itemAlignment === "Right" ? 16 : -16,
+                    x: cSettings.itemAlignment === "Right" ? geometry.entryOffset : -geometry.entryOffset,
                     duration: animationDuration,
                     easing: quintOut,
                 }}
@@ -197,7 +208,7 @@
 
       &.border-accent,
       &.border-item {
-        border-right: solid 3px var(--arraylist-border-color);
+        border-right: solid var(--arraylist-border-width) var(--arraylist-border-color);
       }
 
       &.border-item {
@@ -239,10 +250,11 @@
     box-sizing: content-box;
     background-color: color-mix(in srgb, var(--arraylist-base-color) var(--arraylist-alpha), transparent);
     color: var(--arraylist-tag-color);
-    font-size: 14px;
+    font-size: var(--arraylist-font-size);
+    line-height: var(--arraylist-line-height);
     border-radius: 0;
-    padding: 5px 8px;
-    border-left: solid 3px var(--arraylist-border-color);
+    padding: var(--arraylist-padding-y) var(--arraylist-padding-x);
+    border-left: solid var(--arraylist-border-width) var(--arraylist-border-color);
     width: var(--arraylist-content-width);
     font-weight: 500;
     white-space: nowrap;
@@ -264,7 +276,7 @@
     }
 
     &.shadow {
-      box-shadow: 0 3px 8px var(--arraylist-shadow-color);
+      box-shadow: 0 var(--arraylist-shadow-y) var(--arraylist-shadow-blur) var(--arraylist-shadow-color);
     }
   }
 
@@ -274,11 +286,11 @@
   }
 
   .module.glow-soft .module-name {
-    text-shadow: 0 0 4px var(--arraylist-glow-color);
+    text-shadow: 0 0 var(--arraylist-soft-glow) var(--arraylist-glow-color);
   }
 
   .module.glow-strong .module-name {
-    text-shadow: 0 0 8px var(--arraylist-glow-color);
+    text-shadow: 0 0 var(--arraylist-strong-glow) var(--arraylist-glow-color);
   }
 
   .tag {

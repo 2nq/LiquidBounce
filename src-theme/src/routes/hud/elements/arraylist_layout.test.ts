@@ -53,4 +53,15 @@ describe("ArrayList row sizing", () => {
     it("keeps the measured text width as content width", () => {
         expect(arrayListSource).toContain("box-sizing: content-box;");
     });
+
+    it("renders and measures text at its final size", () => {
+        expect(arrayListSource).not.toContain("style:zoom");
+        expect(arrayListSource).not.toContain("resolveArrayListZoom");
+        expect(arrayListSource).not.toContain("will-change");
+        expect(arrayListSource).toContain("geometry.fontDeclaration");
+        expect(arrayListSource).toContain("--arraylist-font-size");
+        expect(arrayListSource).toContain("--arraylist-line-height");
+        expect(arrayListSource).toContain("--arraylist-padding-x");
+        expect(arrayListSource).toContain("--arraylist-padding-y");
+    });
 });
