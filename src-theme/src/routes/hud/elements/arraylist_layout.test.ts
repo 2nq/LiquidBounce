@@ -1,6 +1,11 @@
 import {describe, expect, it} from "vitest";
 import arrayListSource from "./ArrayList.svelte?raw";
-import {resolveArrayListGeometry, resolveArrayListOffset, resolveArrayListScale} from "./arraylist_layout";
+import {
+    resolveArrayListGeometry,
+    resolveArrayListOffset,
+    resolveArrayListScale,
+    resolveArrayListStepCorners,
+} from "./arraylist_layout";
 
 describe("ArrayList offsets", () => {
     it.each([
@@ -85,10 +90,23 @@ describe("ArrayList row sizing", () => {
 });
 
 describe("ArrayList background shape", () => {
-    it("keeps rows seamless and rounds every exposed width step", () => {
+    it.each([
+        [100, undefined, undefined, {top: false, bottom: false}],
+        [100, 100, 100, {top: false, bottom: false}],
+        [100, 120, 80, {top: false, bottom: true}],
+        [80, 60, 100, {top: true, bottom: false}],
+        [100, 80, 80, {top: true, bottom: true}],
+        [100, 99.8, 99.8, {top: false, bottom: false}],
+    ])("rounds the wider row where it meets a shorter row", (width, previous, next, expected) => {
+        expect(resolveArrayListStepCorners(width, previous, next)).toEqual(expected);
+    });
+
+    it("keeps equal joins square and rounds the wider row at a width step", () => {
         expect(arrayListSource).toContain("gap: 0;");
-        expect(arrayListSource).toContain("border-radius: 0 var(--arraylist-radius) var(--arraylist-radius) 0;");
-        expect(arrayListSource).toContain("border-radius: var(--arraylist-radius) 0 0 var(--arraylist-radius);");
+        expect(arrayListSource).toContain("class:round-step-top");
+        expect(arrayListSource).toContain("class:round-step-bottom");
+        expect(arrayListSource).toContain("&.round-step-top");
+        expect(arrayListSource).toContain("&.round-step-bottom");
         expect(arrayListSource).toContain("border-top-left-radius: var(--arraylist-radius);");
         expect(arrayListSource).toContain("border-bottom-left-radius: var(--arraylist-radius);");
         expect(arrayListSource).toContain("border-top-right-radius: var(--arraylist-radius);");

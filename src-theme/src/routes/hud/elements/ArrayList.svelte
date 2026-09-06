@@ -9,7 +9,11 @@
     import {quintOut} from "svelte/easing";
     import {convertToSpacedString, spaceSeperatedNames} from "../../../theme/theme_config";
     import {resolveArrayListColor, type ArrayListThemeName} from "./arraylist_themes";
-    import {resolveArrayListGeometry, resolveArrayListOffset} from "./arraylist_layout";
+    import {
+        resolveArrayListGeometry,
+        resolveArrayListOffset,
+        resolveArrayListStepCorners,
+    } from "./arraylist_layout";
 
     export let settings: { [name: string]: any };
 
@@ -173,8 +177,15 @@
                 --arraylist-strong-glow: ${geometry.strongGlow}px;`}
 >
     {#each enabledModules as module, index (module.name)}
+        {@const stepCorners = resolveArrayListStepCorners(
+            module.width,
+            enabledModules[index - 1]?.width,
+            enabledModules[index + 1]?.width,
+        )}
         <div
                 class="module"
+                class:round-step-top={stepCorners.top}
+                class:round-step-bottom={stepCorners.bottom}
                 class:background-off={cSettings.background === "Off"}
                 class:background-solid={cSettings.background === "Solid"}
                 class:background-translucent={cSettings.background === "Translucent"}
@@ -211,7 +222,7 @@
     &.align-left .module {
       margin-right: auto;
       margin-left: var(--arraylist-horizontal-offset);
-      border-radius: 0 var(--arraylist-radius) var(--arraylist-radius) 0;
+      border-radius: 0;
       border-left: none;
 
       &.border-accent,
@@ -222,27 +233,37 @@
       &.border-item {
         border-right-color: var(--arraylist-item-color);
       }
+
+      &.round-step-top {
+        border-top-right-radius: var(--arraylist-radius);
+      }
+
+      &.round-step-bottom {
+        border-bottom-right-radius: var(--arraylist-radius);
+      }
     }
 
     &.align-right .module {
       margin-left: auto;
       margin-right: var(--arraylist-horizontal-offset);
-      border-radius: var(--arraylist-radius) 0 0 var(--arraylist-radius);
+      border-radius: 0;
+
+      &.round-step-top {
+        border-top-left-radius: var(--arraylist-radius);
+      }
+
+      &.round-step-bottom {
+        border-bottom-left-radius: var(--arraylist-radius);
+      }
     }
 
-    &.align-left .module:first-child {
+    > .module:first-child {
       border-top-left-radius: var(--arraylist-radius);
-    }
-
-    &.align-left .module:last-child {
-      border-bottom-left-radius: var(--arraylist-radius);
-    }
-
-    &.align-right .module:first-child {
       border-top-right-radius: var(--arraylist-radius);
     }
 
-    &.align-right .module:last-child {
+    > .module:last-child {
+      border-bottom-left-radius: var(--arraylist-radius);
       border-bottom-right-radius: var(--arraylist-radius);
     }
   }
