@@ -2,19 +2,34 @@ export const STATES = Object.freeze({
   IDLE: "IDLE",
   WAITING_MENU: "WAITING_MENU",
   SPAMMING: "SPAMMING",
+  HOLDING_SHIFT_BEFORE_USE: "HOLDING_SHIFT_BEFORE_USE",
+  HOLDING_SHIFT_AFTER_USE: "HOLDING_SHIFT_AFTER_USE",
   HALTED: "HALTED"
 });
 
 const SPAWNER_SLOT = 10;
 const HOTBAR_SLOT = 1;
 const MAINTENANCE_INTERVAL = 30_000;
+const SHIFT_BEFORE_USE = 150;
+const SHIFT_AFTER_USE = 100;
 
 export function createAutoSpawnerController(environment) {
   let state = STATES.IDLE;
   let dueAt = null;
   let nextMaintenanceAt = null;
+  let shiftHeld = false;
+
+  function releaseShift() {
+    if (!shiftHeld) {
+      return;
+    }
+
+    environment.setShiftDown(false);
+    shiftHeld = false;
+  }
 
   function halt(message) {
+    releaseShift();
     state = STATES.HALTED;
     dueAt = null;
     environment.display(message);
@@ -29,6 +44,7 @@ export function createAutoSpawnerController(environment) {
     },
 
     disable() {
+      releaseShift();
       state = STATES.IDLE;
       dueAt = null;
       nextMaintenanceAt = null;
@@ -36,6 +52,44 @@ export function createAutoSpawnerController(environment) {
 
     tick(now) {
       if (state === STATES.IDLE || state === STATES.HALTED) {
+        return;
+      }
+
+      if (state === STATES.HOLDING_SHIFT_BEFORE_USE) {
+        if (!environment.setShiftDown(true)) {
+          halt("§c[AutoSpawner] Não foi possível manter o Shift pressionado.");
+          return;
+        }
+
+        if (dueAt === null || now < dueAt) {
+          return;
+        }
+
+        if (!environment.useMainHand()) {
+          halt("§c[AutoSpawner] Não foi possível carregar no botão direito.");
+          return;
+        }
+
+        state = STATES.HOLDING_SHIFT_AFTER_USE;
+        dueAt = now + SHIFT_AFTER_USE;
+        return;
+      }
+
+      if (state === STATES.HOLDING_SHIFT_AFTER_USE) {
+        if (!environment.setShiftDown(true)) {
+          halt("§c[AutoSpawner] Não foi possível manter o Shift pressionado.");
+          return;
+        }
+
+        if (dueAt === null || now < dueAt) {
+          return;
+        }
+
+        releaseShift();
+        environment.sendCommand("spawners");
+        state = STATES.WAITING_MENU;
+        dueAt = now + environment.getOpenDelay();
+        nextMaintenanceAt = now + MAINTENANCE_INTERVAL;
         return;
       }
 
@@ -49,15 +103,19 @@ export function createAutoSpawnerController(environment) {
       }
 
       if (nextMaintenanceAt !== null && now >= nextMaintenanceAt) {
-        if (!environment.useHotbarSlotWhileSneaking(HOTBAR_SLOT)) {
-          halt("§c[AutoSpawner] Não foi possível usar o slot 2 da hotbar.");
+        if (!environment.prepareHotbarSlot(HOTBAR_SLOT)) {
+          halt("§c[AutoSpawner] Não foi possível fechar o menu ou selecionar o slot 2 da hotbar.");
           return;
         }
 
-        environment.sendCommand("spawners");
-        state = STATES.WAITING_MENU;
-        dueAt = now + environment.getOpenDelay();
-        nextMaintenanceAt = now + MAINTENANCE_INTERVAL;
+        shiftHeld = true;
+        if (!environment.setShiftDown(true)) {
+          halt("§c[AutoSpawner] Não foi possível pressionar o Shift.");
+          return;
+        }
+
+        state = STATES.HOLDING_SHIFT_BEFORE_USE;
+        dueAt = now + SHIFT_BEFORE_USE;
         return;
       }
 
@@ -75,7 +133,7 @@ export function createAutoSpawnerController(environment) {
 export function registerAutoSpawner(api) {
   const script = api.registerScript({
     name: "AutoSpawner",
-    version: "3.0.0",
+    version: "3.1.0",
     authors: ["Codex"]
   });
 
@@ -104,30 +162,42 @@ export function registerAutoSpawner(api) {
       getOpenDelay: () => Number(mod.settings.openDelay.get()),
       sendCommand: command => api.NetworkUtil.sendCommand(command),
       display: message => api.Client.displayChatMessage(message),
-      useHotbarSlotWhileSneaking(slot) {
+      prepareHotbarSlot(slot) {
         const player = api.mc.player;
 
-        if (!player || !player.connection || !api.mc.gameMode) {
+        if (!player || !player.inventory) {
           return false;
         }
 
         try {
           player.closeContainer();
           player.inventory.selectedSlot = slot;
-          player.connection.send(new api.PlayerCommandPacket(
-            player,
-            api.PlayerCommandPacket.Action.START_SNEAKING
-          ));
+          return true;
+        } catch (_error) {
+          return false;
+        }
+      },
+      setShiftDown(down) {
+        const keyShift = api.mc.options?.keyShift;
 
-          try {
-            api.InteractionUtil.useItem(api.InteractionHand.MAIN_HAND);
-          } finally {
-            player.connection.send(new api.PlayerCommandPacket(
-              player,
-              api.PlayerCommandPacket.Action.STOP_SNEAKING
-            ));
-          }
+        if (!keyShift) {
+          return false;
+        }
 
+        try {
+          keyShift.setDown(down);
+          return true;
+        } catch (_error) {
+          return false;
+        }
+      },
+      useMainHand() {
+        if (!api.mc.player || !api.mc.gameMode) {
+          return false;
+        }
+
+        try {
+          api.InteractionUtil.useItem(api.InteractionHand.MAIN_HAND);
           return true;
         } catch (_error) {
           return false;
@@ -184,7 +254,6 @@ if (typeof registerScript === "function") {
     mc,
     InteractionUtil,
     InteractionHand,
-    ContainerInput: Java.type("net.minecraft.world.inventory.ContainerInput"),
-    PlayerCommandPacket: Java.type("net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket")
+    ContainerInput: Java.type("net.minecraft.world.inventory.ContainerInput")
   });
 }
