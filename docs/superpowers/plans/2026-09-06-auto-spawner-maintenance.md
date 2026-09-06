@@ -10,10 +10,11 @@
 
 ## Steps
 
-1. Write a failing controller test proving that no maintenance occurs before 30 seconds, the action uses internal hotbar index 1 at 30 seconds, `/spawners` is sent again, and Q spam resumes only after `AtrasoAbertura`.
-2. Add a fixed `30_000 ms` maintenance deadline to the controller and call one environment operation at the deadline.
-3. Implement that operation by closing the container, selecting `player.inventory.selectedSlot = 1`, sending `START_SNEAKING`, invoking `InteractionUtil.useItem(InteractionHand.MAIN_HAND)`, and sending `STOP_SNEAKING` in `finally`.
-4. Pass the required LiquidBounce/Java bindings into the runtime API object and bump the script version.
-5. Run the controller test, syntax check, and static behavior scan; remove the temporary test.
-6. Copy the verified script to the requested LiquidLauncher directory and confirm the two files are byte-identical.
-7. Force-add only the ignored AutoSpawner script, commit it with these documents, push the feature branch, merge it into `nextgen`, rerun verification, and push `nextgen`.
+1. Reproduce and document the current failure: Minecraft 26.2 has no `START_SNEAKING` or `STOP_SNEAKING` members in `ServerboundPlayerCommandPacket.Action`, so the adapter throws immediately after selecting the hotbar slot.
+2. Write a failing controller test proving the ordered timing: select slot 2 and press Shift at 30 seconds, use the main hand at 30.150 seconds while Shift is still active, release at 30.250 seconds, reopen `/spawners`, resume Q spam after `AtrasoAbertura`, and repeat after another 30 seconds.
+3. Add pre-use and post-use Shift-hold states. Reassert Shift on every tick while either state is active, and release it on disable, emergency stop, halt, or successful completion.
+4. Replace the removed player-command packet actions with `mc.options.keyShift.setDown(boolean)` and keep `InteractionUtil.useItem(InteractionHand.MAIN_HAND)` for the focus-independent right click.
+5. Bump the script version and remove the obsolete `PlayerCommandPacket` binding.
+6. Run the controller test, adapter test, syntax check, and static behavior scan; remove the temporary test.
+7. Copy the verified script to the requested LiquidLauncher directory and confirm the two files are byte-identical.
+8. Commit the script and documents, push the feature branch, merge it into `nextgen`, rerun verification, and push `nextgen`.
