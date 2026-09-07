@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {onMount} from "svelte";
+    import {onMount, tick} from "svelte";
     import type {Module} from "../../../integration/types";
     import {getModules, setModuleEnabled, setTyping} from "../../../integration/rest";
     import {listen} from "../../../integration/ws";
@@ -10,9 +10,13 @@
     import RiseModuleDetails from "./RiseModuleDetails.svelte";
     import {searchModules} from "./rise_search";
     import {setItem} from "../../../integration/persistent_storage";
+    import {createScrollMemory, shouldStartSearch} from "./rise_interactions";
     import "./rise-controls.scss";
     let stage: HTMLDivElement;
     let windowElement: HTMLElement;
+    let searchInput: HTMLInputElement;
+    let contentElement: HTMLDivElement;
+    const listScroll = createScrollMemory();
     let x = 0, y = 0;
     let drag: {x: number; y: number; left: number; top: number} | undefined;
     function clampPosition() {
@@ -81,11 +85,29 @@
         catch { error = `Could not toggle ${module.name}.`; }
         finally { pending.delete(module.name); pending = new Set(pending); }
     }
+    function openModuleSettings(name: string) {
+        listScroll.capture(contentElement);
+        selected = name;
+    }
+    async function returnToModules() {
+        selected = "";
+        await tick();
+        listScroll.restore(contentElement);
+    }
+    async function handleWindowKeyDown(event: KeyboardEvent) {
+        if (hud || client || current || !shouldStartSearch(event, event.target as HTMLElement | null)) return;
+        event.preventDefault();
+        query += event.key;
+        await tick();
+        searchInput?.focus();
+    }
     function navigate(next: string) {category = next; selected = ""; query = ""; client = false;}
     onMount(() => {void load(); return () => {void setTyping(false);};});
     listen("moduleToggle", e => {modules = modules.map(m => m.name === e.moduleName ? {...m, enabled:e.enabled} : m);});
     listen("socketReady", load);
 </script>
+
+<svelte:window on:keydown={handleWindowKeyDown}/>
 
 {#if hud}
     <HudEditor/>
@@ -99,7 +121,7 @@
                 on:dblclick={() => {x = 0; y = 0; void setItem("rise-window-position", JSON.stringify({x, y}));}}><span></span></button>
             <aside>
                 <div class="brand">LB<span>LiquidBounce</span></div>
-                <input aria-label="Search modules" placeholder="Search modules…" bind:value={query}
+                <input aria-label="Search modules" placeholder="Search modules…" bind:value={query} bind:this={searchInput}
                     on:input={() => {selected = ""; client = false;}}
                     on:focus={() => setTyping(true)} on:blur={() => setTyping(false)}/>
                 <nav aria-label="Categories">
@@ -118,7 +140,7 @@
             <main>
                 <header>
                     {#if current && !client}
-                        <button class="back" aria-label="Back to modules" on:click={() => selected = ""}>←</button>
+                        <button class="back" aria-label="Back to modules" on:click={returnToModules}>←</button>
                     {/if}
                     <div>
                         <h1>{client ? "Client Settings" : current ? label(current.name) : query.trim() ? "Search results" : category || "Modules"}</h1>
@@ -126,7 +148,7 @@
                     </div>
                     {#if current && !client}<button class="state" class:enabled={current.enabled} disabled={pending.has(current.name)} on:click={() => current && toggle(current)}>{current.enabled ? "Enabled" : "Disabled"}</button>{/if}
                 </header>
-                <div class="content">
+                <div class="content" bind:this={contentElement}>
                     {#if error}<p role="alert">{error} <button on:click={load}>Retry</button></p>{/if}
                     {#if client}<GlobalSettings embedded/>
                     {:else if current}
@@ -136,11 +158,11 @@
                         {#each results as module (module.name)}
                             <div class="module-row" class:enabled={module.enabled}>
                                 <button class="module-toggle" disabled={pending.has(module.name)} on:click={() => toggle(module)}
-                                    on:contextmenu|preventDefault={() => selected = module.name}>
+                                    on:contextmenu|preventDefault={() => openModuleSettings(module.name)}>
                                     <span class="module-copy"><strong>{label(module.name)}</strong><span>{module.description}</span></span>
                                     <span class="indicator" aria-label={module.enabled ? "Enabled" : "Disabled"}></span>
                                 </button>
-                                <button class="details" aria-label={`Configure ${module.name}`} on:click={() => selected = module.name}>›</button>
+                                <button class="details" aria-label={`Configure ${module.name}`} on:click={() => openModuleSettings(module.name)}>›</button>
                             </div>
                         {:else}<p class="empty">No modules found.</p>{/each}
                     {/if}
