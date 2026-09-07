@@ -16,7 +16,7 @@
 - Create: `src-theme/src/routes/clickgui/rise/rise_interactions.test.ts`
 - Create: `src-theme/src/routes/clickgui/rise/rise_interactions.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```ts
 import {describe, expect, it} from "vitest";
@@ -46,13 +46,13 @@ describe("createScrollMemory", () => {
 });
 ```
 
-- [ ] **Step 2: Run the focused test and verify RED**
+- [x] **Step 2: Run the focused test and verify RED**
 
 Run: `npm run test:unit -- rise_interactions.test.ts`
 
 Expected: FAIL because `./rise_interactions` does not exist.
 
-- [ ] **Step 3: Implement the minimal helpers**
+- [x] **Step 3: Implement the minimal helpers**
 
 ```ts
 type KeyLike = Pick<KeyboardEvent, "key" | "ctrlKey" | "altKey" | "metaKey">;
@@ -78,7 +78,7 @@ export function createScrollMemory() {
 }
 ```
 
-- [ ] **Step 4: Run the focused test and verify GREEN**
+- [x] **Step 4: Run the focused test and verify GREEN**
 
 Run: `npm run test:unit -- rise_interactions.test.ts`
 
@@ -89,7 +89,7 @@ Expected: PASS.
 **Files:**
 - Modify: `src-theme/src/routes/clickgui/rise/RiseClickGui.svelte`
 
-- [ ] **Step 1: Add the interaction state and handlers**
+- [x] **Step 1: Add the interaction state and handlers**
 
 Import `tick`, `createScrollMemory`, and `shouldStartSearch`. Bind the search input and `.content` container. Route both module-settings entry points through `openModuleSettings`, and route the back arrow through `returnToModules`:
 
@@ -118,27 +118,27 @@ async function handleWindowKeyDown(event: KeyboardEvent) {
 }
 ```
 
-- [ ] **Step 2: Bind the elements and events**
+- [x] **Step 2: Bind the elements and events**
 
 Add a window key handler, `bind:this={searchInput}` to the search input, `bind:this={contentElement}` to `.content`, and replace direct `selected` assignments used for entering/leaving settings with the navigation handlers.
 
-- [ ] **Step 3: Run frontend verification**
+- [x] **Step 3: Run frontend verification**
 
 Run: `npm run test:unit`
 
-Expected: 7 test files pass with 42 tests.
+Expected: 7 test files pass with 43 tests.
 
 Run: `npm run check`
 
 Expected: Svelte check completes with 0 errors.
 
-- [ ] **Step 4: Build the frontend**
+- [x] **Step 4: Build the frontend**
 
 Run: `npm run build`
 
 Expected: Vite production build succeeds.
 
-- [ ] **Step 5: Commit the feature**
+- [x] **Step 5: Commit the feature**
 
 ```powershell
 git add -- src-theme/src/routes/clickgui/rise/rise_interactions.ts src-theme/src/routes/clickgui/rise/rise_interactions.test.ts src-theme/src/routes/clickgui/rise/RiseClickGui.svelte docs/superpowers/plans/2026-09-07-clickgui-navigation-ux.md
